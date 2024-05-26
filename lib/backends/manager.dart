@@ -17,4 +17,9 @@ class Manager {
   static Future<String?> loadCsrfToken() async {
     return await storage.read(key: 'csrf');
   }
+
+  static Future<bool> isLoggedIn() async {
+    final sessionToken = await Manager.loadSessionToken();
+    return sessionToken != null;
+  }
 }
