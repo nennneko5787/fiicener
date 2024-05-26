@@ -27,10 +27,11 @@ class _LoginPageState extends State<LoginPage> {
     if (setCookieHeader != null) {
       // set-cookieヘッダーを';'で分割して、csrftokenを含む行を検索
       List<String> cookies = setCookieHeader.split(';');
+      String csrfToken = "";
       for (String cookie in cookies) {
         if (cookie.trim().startsWith('csrftoken=')) {
           // csrftokenの値を取得
-          String csrfToken = cookie.split('=')[1].trim();
+          csrfToken = cookie.split('=')[1].trim();
           print('csrftoken: $csrfToken');
           break;
         }
@@ -46,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
       var inputElement =
           document.querySelector('input[name="csrfmiddlewaretoken"]');
 
-      var middletoken = "";
+      String middletoken = "";
       // input要素が見つかった場合は、その値を返す
       if (inputElement != null) {
         middletoken = inputElement.attributes['value'] ?? '';
@@ -55,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
       var loginres =
           await http.post(Uri.parse('https://fiicen.jp/login/'), headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': 'csrftoken=$csrfToken',
       }, body: {
         "csrfmiddlewaretoken": middletoken,
         "account_name": username,
