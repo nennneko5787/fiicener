@@ -36,17 +36,34 @@ class Manager {
   }
 
   static Future getMeDetailed() async {
-    final response = await http.get(
-      Uri.parse('https://fiicen.jp/login/'),
+    final homeres = await http.get(
+      Uri.parse('https://fiicen.jp/home/'),
       headers: {
-        'Content-Type': 'text/html',
+        'Cookie':
+            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
+      },
+    );
+
+    var document = htmlParser.parse(homeres.body);
+    var usernameElement = document
+        .querySelector('div[class="account-name account-menu-name-string"]');
+    String username = "";
+    // input要素が見つかった場合は、その値を返す
+    if (usernameElement != null) {
+      username = usernameElement.attributes['src'] ?? '';
+      username = username.substring(1);
+    }
+
+    final response = await http.get(
+      Uri.parse('https://fiicen.jp/field/$username'),
+      headers: {
         'Cookie':
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
       },
     );
 
     // HTMLを解析
-    var document = htmlParser.parse(response.body);
+    document = htmlParser.parse(response.body);
     // <img class="account-icon-80" src="/media/account_icon/3747.jpg" onclick="detailImage('/media/account_icon/3747.jpg/', 'account_icon')">
     var iconElement = document.querySelector('img[class="account-icon-80"]');
     String iconurl = "";
