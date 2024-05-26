@@ -22,7 +22,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
       headers: {
         'Content-Type': 'text/html',
         'Cookie':
-            'csrftoken=${Manager.loadCsrfToken()};sessionid=${Manager.loadSessionToken()}',
+            'csrftoken=${await Manager.loadCsrfToken()}; sessionid=${await Manager.loadSessionToken()}',
       },
     );
 
@@ -33,7 +33,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
           title: Text('Response: ${response.statusCode}'),
           content: SingleChildScrollView(
             child: Text(
-              'csrftoken=${Manager.loadCsrfToken()};sessionid=${Manager.loadSessionToken()}\n${response.body}',
+              '${response.body}',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20.0),
             ),

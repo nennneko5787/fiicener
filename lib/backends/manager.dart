@@ -41,7 +41,7 @@ class Manager {
       headers: {
         'Content-Type': 'text/html',
         'Cookie':
-            'csrftoken=${loadCsrfToken()};sessionid=${loadSessionToken()}',
+            'csrftoken=${await loadCsrfToken()}; sessionid=${await loadSessionToken()}',
       },
     );
 
