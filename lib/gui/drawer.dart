@@ -13,6 +13,30 @@ class DrawerMenu extends StatefulWidget {
 class _DrawerMenuState extends State<DrawerMenu> {
   @override
   Widget build(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('情報'),
+          content: SingleChildScrollView(
+            child: Text(
+              '${Manager.res}',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20.0),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

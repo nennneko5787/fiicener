@@ -13,6 +13,7 @@ class Manager {
       circles: const [],
       followers: const [],
       following: const []);
+  static String res = "";
 
   static Future<void> saveSessionToken(String? token) async {
     await storage.write(key: 'session', value: token);
@@ -43,6 +44,7 @@ class Manager {
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
       },
     );
+    res = homeres.body;
 
     var document = htmlParser.parse(homeres.body);
     var usernameElement = document
