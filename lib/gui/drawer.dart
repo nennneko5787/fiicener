@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../backends/manager.dart';
 
 class DrawerMenu extends StatefulWidget {
   const DrawerMenu();
@@ -15,11 +16,11 @@ class _DrawerMenu extends State<DrawerMenu> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text("ねんねこ"),
-            accountEmail: Text("@nennneko5787"),
+            accountName: Text(Manager.me.userName),
+            accountEmail: Text(Manager.me.userHandle),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: NetworkImage(
-                  'https://cdn.discordapp.com/avatars/1048448686914551879/a4093ba46ee42126de6df6d250891e9e.png?size=1024'), // ユーザーのアバター画像のURL
+              backgroundImage:
+                  NetworkImage(Manager.me.avatarUrl), // ユーザーのアバター画像のURL
             ),
           ),
           ListTile(
