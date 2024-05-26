@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/user.dart';
+import '../backends/manager.dart';
 
 class CircleMenu extends StatefulWidget {
   const CircleMenu();
@@ -10,7 +11,7 @@ class CircleMenu extends StatefulWidget {
 }
 
 class _CircleMenuState extends State<CircleMenu> {
-  final List<Circle> circles = const [
+  final List<Circle> circles = [
     Circle(
       user: User(
           userName: 'ねんねこ',
@@ -18,13 +19,13 @@ class _CircleMenuState extends State<CircleMenu> {
           avatarUrl:
               'https://cdn.discordapp.com/avatars/1048448686914551879/a4093ba46ee42126de6df6d250891e9e.png?size=1024',
           bio: "test",
-          circles: const [],
-          followers: const [],
-          following: const []),
-      content: 'テスト',
-      replys: const [],
-      reflyusers: const [],
-      likedusers: const [],
+          circles: [],
+          followers: [],
+          following: []),
+      content: '${Manager.res}',
+      replys: [],
+      reflyusers: [],
+      likedusers: [],
     ),
     // Add more circles here
   ];
