@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../backends/manager.dart';
 import 'package:http/http.dart' as http;
+import 'login.dart';
 
 class DrawerMenu extends StatefulWidget {
   const DrawerMenu();
@@ -10,48 +11,6 @@ class DrawerMenu extends StatefulWidget {
 }
 
 class _DrawerMenuState extends State<DrawerMenu> {
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
-  }
-
-  Future<void> _fetchData() async {
-    String? csrf = await Manager.loadCsrfToken();
-    String? session = await Manager.loadSessionToken();
-    final response = await http.get(
-      Uri.parse('https://fiicen.jp/login/'),
-      headers: {
-        'Content-Type': 'text/html',
-        'Cookie': 'csrftoken=${csrf}; sessionid=${session}',
-      },
-    );
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('${csrf}\n${session}\nResponse: ${response.statusCode}'),
-          content: SingleChildScrollView(
-            child: Text(
-              '${response.body}',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20.0),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -86,7 +45,12 @@ class _DrawerMenuState extends State<DrawerMenu> {
           ListTile(
             title: const Text('ログアウト', style: TextStyle(fontSize: 13)),
             onTap: () {
-              // サイドメニューアイテム2がタップされたときの処理
+              Manager.saveSessionToken(null);
+              Manager.saveCsrfToken(null);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
             },
           ),
         ],

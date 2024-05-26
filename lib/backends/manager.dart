@@ -14,7 +14,7 @@ class Manager {
       followers: const [],
       following: const []);
 
-  static Future<void> saveSessionToken(String token) async {
+  static Future<void> saveSessionToken(String? token) async {
     await storage.write(key: 'session', value: token);
   }
 
@@ -22,7 +22,7 @@ class Manager {
     return await storage.read(key: 'session');
   }
 
-  static Future<void> saveCsrfToken(String token) async {
+  static Future<void> saveCsrfToken(String? token) async {
     await storage.write(key: 'csrf', value: token);
   }
 
@@ -41,7 +41,7 @@ class Manager {
       headers: {
         'Content-Type': 'text/html',
         'Cookie':
-            'csrftoken=${await loadCsrfToken()}; sessionid=${await loadSessionToken()}',
+            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
       },
     );
 
