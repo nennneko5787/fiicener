@@ -4,6 +4,7 @@ import 'appbar.dart';
 import '../backends/manager.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as html;
+import 'timeline.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -33,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
           // csrftokenの値を取得
           csrfToken = cookie.split('=')[1].trim();
           print('csrftoken: $csrfToken');
+          await Manager.saveCsrfToken(csrfToken);
           break;
         }
       }
@@ -63,23 +65,47 @@ class _LoginPageState extends State<LoginPage> {
         "password": password,
       });
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('HTTP Res: ${loginres.statusCode}'),
-            content: Text('${loginres.body}'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
+      if (loginres.statusCode == 302) {
+        // レスポンスヘッダーからset-cookieヘッダーを取得
+        String? setCookieHeader = response.headers['set-cookie'];
+        if (setCookieHeader != null) {
+          // set-cookieヘッダーを';'で分割して、sessionidを含む行を検索
+          List<String> cookies = setCookieHeader.split(';');
+          String sessionid = "";
+          for (String cookie in cookies) {
+            if (cookie.trim().startsWith('sessionid=')) {
+              // sessionidの値を取得
+              sessionid = cookie.split('=')[1].trim();
+              print('sessionid: $sessionid');
+              break;
+            }
+          }
+
+          await Manager.saveSessionToken(sessionid);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MyHomePage()),
           );
-        },
-      );
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('エラー！'),
+              content: Text('ログインに失敗しました。'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     } else {
       showDialog(
         context: context,
