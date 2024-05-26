@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
             // データの読み込みが完了した場合の処理
             bool isloggedin = snapshot.data!;
             Widget home;
-            if (isloggedin) {
+            if (!isloggedin) {
               home = LoginPage();
             } else {
               home = MyHomePage();
