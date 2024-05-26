@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../backends/manager.dart';
+import 'package:http/http.dart' as http;
 
 class DrawerMenu extends StatefulWidget {
   const DrawerMenu();
@@ -11,6 +12,38 @@ class DrawerMenu extends StatefulWidget {
 class _DrawerMenu extends State<DrawerMenu> {
   @override
   Widget build(BuildContext context) {
+    final response = await http.get(
+      Uri.parse('https://fiicen.jp/login/'),
+      headers: {
+        'Content-Type': 'text/html',
+        'Cookie':
+            'csrftoken=${Manager.loadCsrfToken()};sessionid=${Manager.loadSessionToken()}',
+      },
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Response: ${response.statusCode}'),
+          content: SingleChildScrollView(
+            child: Text(
+              'csrftoken=${Manager.loadCsrfToken()};sessionid=${Manager.loadSessionToken()}\n${response.body}',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20.0),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
