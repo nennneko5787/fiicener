@@ -44,7 +44,6 @@ class Manager {
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
       },
     );
-    res = homeres.body;
 
     var document = htmlParser.parse(homeres.body);
     var usernameElement = document
@@ -63,6 +62,8 @@ class Manager {
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
       },
     );
+
+    res = response.body;
 
     // HTMLを解析
     document = htmlParser.parse(response.body);
