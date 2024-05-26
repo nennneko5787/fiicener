@@ -1,0 +1,43 @@
+name: Build and Test iOS App
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build app
+      run: flutter build ios --release --no-codesign
+
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ios-build
+        path: build/ios/iphoneos/Runner.app
+
+  download:
+    name: Download artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: ios-build
+        path: build
