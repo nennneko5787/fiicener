@@ -17,12 +17,13 @@ class _DrawerMenuState extends State<DrawerMenu> {
   }
 
   Future<void> _fetchData() async {
+    String? csrf = await Manager.loadCsrfToken();
+    String? session = await Manager.loadSessionToken();
     final response = await http.get(
       Uri.parse('https://fiicen.jp/login/'),
       headers: {
         'Content-Type': 'text/html',
-        'Cookie':
-            'csrftoken=${await Manager.loadCsrfToken()}; sessionid=${await Manager.loadSessionToken()}',
+        'Cookie': 'csrftoken=${csrf}; sessionid=${session}',
       },
     );
 
@@ -30,7 +31,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Response: ${response.statusCode}'),
+          title: Text('${csrf}\n${session}\nResponse: ${response.statusCode}'),
           content: SingleChildScrollView(
             child: Text(
               '${response.body}',
