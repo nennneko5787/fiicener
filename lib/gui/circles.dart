@@ -90,6 +90,11 @@ class _CircleMenuState extends State<CircleMenu> {
           onPressed: () => _onLikeButtonPressed(index),
         ),
         Text(circles[index].likedusers.length.toString()),
+        Divider(
+          color: Colors.grey, // 区切り線の色を設定します
+          thickness: 1, // 区切り線の太さを設定します
+          height: 2, // 区切り線の上下の余白を設定します
+        ),
       ],
     );
   }

@@ -6,12 +6,17 @@ class DrawerMenu extends StatefulWidget {
   const DrawerMenu();
 
   @override
-  _DrawerMenu createState() => _DrawerMenu();
+  _DrawerMenuState createState() => _DrawerMenuState();
 }
 
-class _DrawerMenu extends State<DrawerMenu> {
+class _DrawerMenuState extends State<DrawerMenu> {
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
     final response = await http.get(
       Uri.parse('https://fiicen.jp/login/'),
       headers: {
@@ -44,6 +49,10 @@ class _DrawerMenu extends State<DrawerMenu> {
         );
       },
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
