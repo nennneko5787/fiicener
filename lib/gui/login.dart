@@ -82,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
           }
 
           await Manager.saveSessionToken(sessionid);
+          await Manager.initialize();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MyHomePage()),

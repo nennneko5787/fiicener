@@ -51,19 +51,19 @@ class Manager {
     String username = "";
     // input要素が見つかった場合は、その値を返す
     if (usernameElement != null) {
-      username = usernameElement.attributes['src'] ?? '';
+      username = usernameElement.text;
       username = username.substring(1);
     }
 
     final response = await http.get(
-      Uri.parse('https://fiicen.jp/field/$username'),
+      Uri.parse('https://fiicen.jp/field/${username}/'),
       headers: {
         'Cookie':
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
       },
     );
 
-    res = response.body;
+    res = username;
 
     // HTMLを解析
     document = htmlParser.parse(response.body);
