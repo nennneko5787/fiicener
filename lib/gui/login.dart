@@ -30,10 +30,9 @@ class _LoginPageState extends State<LoginPage> {
       List<String> cookies = setCookieHeader.split(';');
       String csrfToken = "";
       for (String cookie in cookies) {
-        if (cookie.trim().startsWith('csrftoken=')) {
+        if (cookie.startsWith('csrftoken=')) {
           // csrftokenの値を取得
-          csrfToken = cookie.split('=')[1].trim();
-          print('csrftoken: $csrfToken');
+          csrfToken = cookie.split('=')[1];
           await Manager.saveCsrfToken(csrfToken);
           break;
         }
@@ -74,10 +73,9 @@ class _LoginPageState extends State<LoginPage> {
           List<String> cookies = setCookieHeader.split(';');
           String sessionid = "";
           for (String cookie in cookies) {
-            if (cookie.trim().startsWith('sessionid=')) {
+            if (cookie.startsWith('sessionid=')) {
               // sessionidの値を取得
-              sessionid = cookie.split('=')[1].trim();
-              print('sessionid: $sessionid');
+              sessionid = cookie.split('=')[1];
               break;
             }
           }
