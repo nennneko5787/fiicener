@@ -53,6 +53,8 @@ class Manager {
     if (match != null) {
       userId = match.group(1) ?? '';
     }
+    res =
+        'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}';
 
     return userId;
   }
