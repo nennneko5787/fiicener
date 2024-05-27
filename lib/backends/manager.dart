@@ -38,7 +38,8 @@ class Manager {
 
   static Future getMeDetailed() async {
     final homeres = await http.get(
-      Uri.parse('https://fiicen.jp/display/'),
+      Uri.parse(
+          'https://fiicen.jp/settings/account_name/?setting=account_name'),
       headers: {
         'Cookie':
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
@@ -46,16 +47,13 @@ class Manager {
     );
 
     var document = htmlParser.parse(homeres.body);
-    var usernameElement = document
-        .querySelector('div[class="account-name account-menu-name-string"]');
+    var usernameElement = document.querySelector('input[class="account_name"]');
     String username = "";
     // input要素が見つかった場合は、その値を返す
     if (usernameElement != null) {
-      username = usernameElement.text;
-      username = username.substring(1);
-    } else {
-      username = "Fiicener";
+      username = usernameElement.attributes['value'] ?? '';
     }
+    res = username;
 
     final response = await http.get(
       Uri.parse('https://fiicen.jp/field/${username}/'),
@@ -64,8 +62,6 @@ class Manager {
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
       },
     );
-
-    res = username;
 
     // HTMLを解析
     document = htmlParser.parse(response.body);
