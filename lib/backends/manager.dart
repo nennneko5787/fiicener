@@ -54,7 +54,7 @@ class Manager {
       userId = match.group(1) ?? '';
     }
     res =
-        'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}';
+        'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
 
     return userId;
   }
