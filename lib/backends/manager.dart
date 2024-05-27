@@ -38,7 +38,7 @@ class Manager {
 
   static Future getMeDetailed() async {
     final homeres = await http.get(
-      Uri.parse('https://fiicen.jp/home/'),
+      Uri.parse('https://fiicen.jp/display/'),
       headers: {
         'Cookie':
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
@@ -75,6 +75,7 @@ class Manager {
     // input要素が見つかった場合は、その値を返す
     if (iconElement != null) {
       iconurl = iconElement.attributes['src'] ?? '';
+      iconurl = 'https://fiicen.jp' + iconurl;
     }
 
     var dElement = document.querySelector('div[class="display-name"]');
