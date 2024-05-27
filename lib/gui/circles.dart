@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/user.dart';
 import '../backends/manager.dart';
-import 'package:vibration/vibration.dart';
 
 class CircleMenu extends StatefulWidget {
   const CircleMenu();
@@ -32,10 +31,6 @@ class _CircleMenuState extends State<CircleMenu> {
   ];
 
   Future<void> _refresh() async {
-    var isVibration = await Vibration.hasVibrator();
-    if (isVibration == true) {
-      Vibration.vibrate(duration: 100);
-    }
     await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
     setState(() {
       // Refresh the data
