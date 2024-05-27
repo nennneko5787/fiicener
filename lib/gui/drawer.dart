@@ -24,6 +24,22 @@ class _DrawerMenuState extends State<DrawerMenu> {
               backgroundImage:
                   NetworkImage(Manager.me.avatarUrl), // ユーザーのアバター画像のURL
             ),
+            otherAccountsPictures: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'フォロー中: ${Manager.me.following.length}',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'フォロワー: ${Manager.me.followers.length}',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            ],
           ),
           ListTile(
             title: const Text('プロフィール'),

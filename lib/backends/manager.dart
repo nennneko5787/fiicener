@@ -36,7 +36,7 @@ class Manager {
     return sessionToken != null;
   }
 
-  static Future getMeDetailed() async {
+  static Future<String?> getUserId() async {
     final homeres = await http.get(
       Uri.parse('https://fiicen.jp/home/'),
       headers: {
@@ -46,19 +46,20 @@ class Manager {
       },
     );
 
-    // 正規表現で必要な部分を抽出
     RegExp regExp = RegExp(r"loadPage\('\/field\/(.*?)\/'\)");
     Match? match = regExp.firstMatch(homeres.body);
 
-    String username = "";
+    String userId = "";
     if (match != null) {
-      username = match.group(1) ?? '';
+      userId = match.group(1) ?? '';
     }
-    res =
-        'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
 
+    return userId;
+  }
+
+  static Future<User> getUserDetails(String userId) async {
     final response = await http.get(
-      Uri.parse('https://fiicen.jp/field/${username}/'),
+      Uri.parse('https://fiicen.jp/field/$userId/'),
       headers: {
         'User-Agent': 'Fiicener/1.00',
         'Cookie':
@@ -66,53 +67,96 @@ class Manager {
       },
     );
 
-    // HTMLを解析
+    RegExp regExp =
+        RegExp(r"openModal\('/account/followers/\?account_id=(\d+)'");
+    Match? match = regExp.firstMatch(response.body);
+
+    String account_num = "";
+    if (match != null) {
+      account_num = match.group(1) ?? '';
+    }
+
     var document = htmlParser.parse(response.body);
-    // <img class="account-icon-80" src="/media/account_icon/3747.jpg" onclick="detailImage('/media/account_icon/3747.jpg/', 'account_icon')">
+
     var iconElement = document.querySelector('img[class="account-icon-80"]');
     String iconurl = "";
-    // input要素が見つかった場合は、その値を返す
     if (iconElement != null) {
       iconurl = iconElement.attributes['src'] ?? '';
       iconurl = 'https://fiicen.jp' + iconurl;
     }
 
     var dElement = document.querySelector('div[class="display-name"]');
-    String display_name = "";
-    // input要素が見つかった場合は、その値を返す
-    if (dElement != null) {
-      display_name = dElement.text;
-    }
+    String display_name = dElement?.text ?? '';
 
     var aElement = document.querySelector('div[class="account-name"]');
-    String account_name = "";
-    // input要素が見つかった場合は、その値を返す
-    if (aElement != null) {
-      account_name = aElement.text;
-    }
+    String account_name = aElement?.text ?? '';
 
     var iElement = document.querySelector('div[class="introduce"]');
-    String introduce = "";
-    // input要素が見つかった場合は、その値を返す
-    if (iElement != null) {
-      introduce = iElement.text;
+    String introduce = iElement?.text ?? '';
+
+    final followers_res = await http.get(
+      Uri.parse(
+          'https://fiicen.jp/account/followers/?account_id=${account_num}'),
+      headers: {
+        'User-Agent': 'Fiicener/1.00',
+        'Cookie':
+            'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}',
+      },
+    );
+
+    document = htmlParser.parse(followers_res.body);
+    var accountNameElements = document.querySelectorAll('.account-name');
+    var accountNames = accountNameElements
+        .map((element) => element.text.substring(1))
+        .toList();
+    List<User> followers = [];
+
+    for (String username in accountNames) {
+      User follower = await getUserDetails(username);
+      followers.add(follower);
     }
 
-    me = User(
-        userName: display_name,
-        userHandle: account_name,
-        avatarUrl: iconurl,
-        bio: introduce,
-        circles: const [],
-        followers: const [],
-        following: const []);
+    final following_res = await http.get(
+      Uri.parse(
+          'https://fiicen.jp/account/followers/?account_id=${account_num}'),
+      headers: {
+        'User-Agent': 'Fiicener/1.00',
+        'Cookie':
+            'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}',
+      },
+    );
+
+    document = htmlParser.parse(following_res.body);
+    accountNameElements = document.querySelectorAll('.account-name');
+    accountNames = accountNameElements
+        .map((element) => element.text.substring(1))
+        .toList();
+    List<User> following = [];
+
+    for (String username in accountNames) {
+      User follower = await getUserDetails(username);
+      following.add(follower);
+    }
+
+    return User(
+      userName: display_name,
+      userHandle: account_name,
+      avatarUrl: iconurl,
+      bio: introduce,
+      circles: const [],
+      followers: followers,
+      following: following,
+    );
   }
 
   static Future<bool> initialize() async {
-    bool isloggedin = await isLoggedIn();
-    if (isloggedin == true) {
-      await getMeDetailed();
+    bool isLoggedIn = await Manager.isLoggedIn();
+    if (isLoggedIn) {
+      String? userId = await getUserId();
+      if (userId != null) {
+        me = await getUserDetails(userId);
+      }
     }
-    return isloggedin;
+    return isLoggedIn;
   }
 }
