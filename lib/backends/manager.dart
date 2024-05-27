@@ -53,7 +53,7 @@ class Manager {
     if (match != null) {
       username = match.group(1) ?? '';
     }
-    res = username;
+    res = homeres.body;
 
     final response = await http.get(
       Uri.parse('https://fiicen.jp/field/${username}/'),
