@@ -53,6 +53,8 @@ class Manager {
     if (usernameElement != null) {
       username = usernameElement.text;
       username = username.substring(1);
+    } else {
+      username = "Fiicener";
     }
 
     final response = await http.get(
@@ -79,21 +81,21 @@ class Manager {
     String display_name = "";
     // input要素が見つかった場合は、その値を返す
     if (dElement != null) {
-      display_name = dElement.text ?? '';
+      display_name = dElement.text;
     }
 
     var aElement = document.querySelector('div[class="account-name"]');
     String account_name = "";
     // input要素が見つかった場合は、その値を返す
     if (aElement != null) {
-      account_name = aElement.text ?? '';
+      account_name = aElement.text;
     }
 
     var iElement = document.querySelector('div[class="introduce"]');
     String introduce = "";
     // input要素が見つかった場合は、その値を返す
     if (iElement != null) {
-      introduce = iElement.text ?? '';
+      introduce = iElement.text;
     }
 
     me = User(
