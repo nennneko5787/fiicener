@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; // Import the http package
+import 'package:http/http.dart' as http;
 import 'appbar.dart';
 import '../backends/manager.dart';
 import 'package:html/parser.dart' as htmlParser;
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (loginres.statusCode == 302) {
         // レスポンスヘッダーからset-cookieヘッダーを取得
-        String? setCookieHeader = response.headers['set-cookie'];
+        String? setCookieHeader = loginres.headers['set-cookie'];
         if (setCookieHeader != null) {
           // set-cookieヘッダーを';'で分割して、sessionidを含む行を検索
           List<String> cookies = setCookieHeader.split(';');
@@ -134,31 +134,35 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBarMenu(),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'アカウント名',
+        child: AutofillGroup(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'アカウント名',
+                ),
+                autofillHints: const [AutofillHints.username],
               ),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'パスワード',
+              SizedBox(height: 16.0),
+              TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'パスワード',
+                ),
+                autofillHints: const [AutofillHints.password],
+                obscureText: true,
               ),
-              obscureText: true,
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: login, // Pass the function without calling it
-              child: Text('ログイン'),
-            ),
-          ],
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: login, // Pass the function without calling it
+                child: Text('ログイン'),
+              ),
+            ],
+          ),
         ),
       ),
     );

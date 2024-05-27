@@ -38,7 +38,7 @@ class Manager {
 
   static Future getMeDetailed() async {
     final homeres = await http.get(
-      Uri.parse('https://fiicen.jp/display/'),
+      Uri.parse('https://fiicen.jp/home/'),
       headers: {
         'Cookie':
             'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
