@@ -157,6 +157,8 @@ class Manager {
       String? userId = await getUserId();
       if (userId != null) {
         me = await getUserDetails(userId);
+      } else {
+        me = await getUserDetails("Fiicener");
       }
     }
     return isLoggedIn;
