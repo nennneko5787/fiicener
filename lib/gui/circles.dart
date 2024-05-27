@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/user.dart';
 import '../backends/manager.dart';
+import 'package:vibration/vibration.dart';
 
 class CircleMenu extends StatefulWidget {
   const CircleMenu();
@@ -31,6 +32,10 @@ class _CircleMenuState extends State<CircleMenu> {
   ];
 
   Future<void> _refresh() async {
+    var isVibration = await Vibration.hasVibrator();
+    if (isVibration == true) {
+      Vibration.vibrate(duration: 100);
+    }
     await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
     setState(() {
       // Refresh the data
@@ -99,36 +104,40 @@ class _CircleMenuState extends State<CircleMenu> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: _refresh,
-      child: ListView.builder(
-        scrollDirection: Axis.vertical, // 縦スクロールバーを追加
-        itemCount: circles.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    _buildCircleAvatar(circles[index]),
-                    const SizedBox(width: 8), // Spacing between avatar and text
-                    _buildUserInfo(circles[index]),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(circles[index].content),
-                _buildActions(index),
-                Divider(
-                  color: Colors.grey, // 区切り線の色を設定します
-                  thickness: 1, // 区切り線の太さを設定します
-                  height: 2, // 区切り線の上下の余白を設定します
-                ),
-              ],
-            ),
-            onTap: () {
-              // Handle tweet tap
-            },
-          );
-        },
+      child: Scrollbar(
+        // Scrollbarの外側にListViewを配置します
+        child: ListView.builder(
+          scrollDirection: Axis.vertical, // 縦スクロールを設定
+          itemCount: circles.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      _buildCircleAvatar(circles[index]),
+                      const SizedBox(
+                          width: 8), // Spacing between avatar and text
+                      _buildUserInfo(circles[index]),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(circles[index].content),
+                  _buildActions(index),
+                  Divider(
+                    color: Colors.grey, // 区切り線の色を設定します
+                    thickness: 1, // 区切り線の太さを設定します
+                    height: 2, // 区切り線の上下の余白を設定します
+                  ),
+                ],
+              ),
+              onTap: () {
+                // Handle tweet tap
+              },
+            );
+          },
+        ),
       ),
     );
   }

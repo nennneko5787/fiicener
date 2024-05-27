@@ -42,7 +42,7 @@ class Manager {
       headers: {
         'User-Agent': 'Fiicener/1.00',
         'Cookie':
-            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()}',
+            'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}',
       },
     );
 
@@ -55,14 +55,14 @@ class Manager {
       username = match.group(1) ?? '';
     }
     res =
-        'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
+        'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
 
     final response = await http.get(
       Uri.parse('https://fiicen.jp/field/${username}/'),
       headers: {
         'User-Agent': 'Fiicener/1.00',
         'Cookie':
-            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()}',
+            'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}',
       },
     );
 
