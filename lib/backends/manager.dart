@@ -51,10 +51,10 @@ class Manager {
 
     String userId = "";
     if (match != null) {
-      userId = match.group(1) ?? '';
+      userId = match.group(1) ?? 'Fiicener';
     }
     res =
-        'sessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
+        'userId={userId}\nsessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
 
     return userId;
   }
@@ -157,8 +157,6 @@ class Manager {
       String? userId = await getUserId();
       if (userId != null) {
         me = await getUserDetails(userId);
-      } else {
-        me = await getUserDetails("Fiicener");
       }
     }
     return isLoggedIn;
