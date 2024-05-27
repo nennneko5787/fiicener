@@ -24,6 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         tooltip: 'サークルを飛ばす',
         child: Icon(Icons.add),
+        backgroundColor: Colors.blue,
       ),
       bottomNavigationBar: Footer(),
     );
