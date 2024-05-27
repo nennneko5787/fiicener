@@ -58,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
       var loginres =
           await http.post(Uri.parse('https://fiicen.jp/login/'), headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'Fiicener/1.00',
         'Cookie': 'csrftoken=$csrfToken',
       }, body: {
         "csrfmiddlewaretoken": middletoken,

@@ -40,8 +40,9 @@ class Manager {
     final homeres = await http.get(
       Uri.parse('https://fiicen.jp/home/'),
       headers: {
+        'User-Agent': 'Fiicener/1.00',
         'Cookie':
-            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
+            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()}',
       },
     );
 
@@ -53,13 +54,15 @@ class Manager {
     if (match != null) {
       username = match.group(1) ?? '';
     }
-    res = homeres.body;
+    res =
+        'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
 
     final response = await http.get(
       Uri.parse('https://fiicen.jp/field/${username}/'),
       headers: {
+        'User-Agent': 'Fiicener/1.00',
         'Cookie':
-            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
+            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()}',
       },
     );
 

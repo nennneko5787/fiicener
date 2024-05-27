@@ -100,6 +100,7 @@ class _CircleMenuState extends State<CircleMenu> {
     return RefreshIndicator(
       onRefresh: _refresh,
       child: ListView.builder(
+        scrollDirection: Axis.vertical, // 縦スクロールバーを追加
         itemCount: circles.length,
         itemBuilder: (context, index) {
           return ListTile(
