@@ -68,6 +68,23 @@ class _LoginPageState extends State<LoginPage> {
       if (loginres.statusCode == 302) {
         // レスポンスヘッダーからset-cookieヘッダーを取得
         String? setCookieHeader = loginres.headers['set-cookie'];
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Notify'),
+              content: Text('${setCookieHeader}'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
         if (setCookieHeader != null) {
           // set-cookieヘッダーを';'で分割して、sessionidを含む行を検索
           List<String> cookies = setCookieHeader.split(';');

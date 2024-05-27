@@ -51,10 +51,10 @@ class Manager {
 
     String userId = "";
     if (match != null) {
-      userId = match.group(1) ?? 'Fiicener';
+      userId = match.group(1) ?? '';
     }
     res =
-        'userId={userId}\nsessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
+        'userId=${userId}\nsessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}\n${homeres.body}';
 
     return userId;
   }
