@@ -37,13 +37,15 @@ class Manager {
   }
 
   static Future<String?> getUserId() async {
+    String? session = await loadSessionToken();
+    String? csrf = await loadCsrfToken();
+
     final homeres = await http.get(
       Uri.parse('https://fiicen.jp/home/'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
+        'Cookie': 'sessionid=${session}; csrftoken=${csrf};',
       },
     );
 
@@ -55,12 +57,23 @@ class Manager {
       userId = match.group(1) ?? '';
     }
     res =
-        'userId=${userId}\nsessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};\n${homeres.body}';
+        'userId=${userId}\nsessionid=${session}; csrftoken=${csrf};\n${homeres.body}';
 
     return userId;
   }
 
   static Future<User> getUserDetails(String userId) async {
+    if (userId == "") {
+      return User(
+        userName: "ユーザーの取得に失敗しました。",
+        userHandle: "missing",
+        avatarUrl: "",
+        bio: "ユーザーの取得に失敗しました。",
+        circles: const [],
+        followers: const [],
+        following: const [],
+      );
+    }
     final response = await http.get(
       Uri.parse('https://fiicen.jp/field/$userId/'),
       headers: {
@@ -114,6 +127,7 @@ class Manager {
     var accountNames = accountNameElements
         .map((element) => element.text.substring(1))
         .toList();
+
     List<User> followers = [];
 
     for (String username in accountNames) {
@@ -137,6 +151,7 @@ class Manager {
     accountNames = accountNameElements
         .map((element) => element.text.substring(1))
         .toList();
+
     List<User> following = [];
 
     for (String username in accountNames) {
