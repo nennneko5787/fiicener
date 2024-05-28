@@ -111,6 +111,7 @@ class Manager {
     var iElement = document.querySelector('div[class="introduce"]');
     String introduce = iElement?.text ?? '';
 
+    /*
     final followers_res = await http.get(
       Uri.parse(
           'https://fiicen.jp/account/followers/?account_id=${account_num}'),
@@ -158,6 +159,7 @@ class Manager {
       User follower = await getUserDetails(username);
       following.add(follower);
     }
+    */
 
     return User(
       userName: display_name,
@@ -165,8 +167,8 @@ class Manager {
       avatarUrl: iconurl,
       bio: introduce,
       circles: const [],
-      followers: followers,
-      following: following,
+      followers: const [], // followers
+      following: const [], // following
     );
   }
 
