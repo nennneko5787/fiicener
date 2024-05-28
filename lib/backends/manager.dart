@@ -1,7 +1,5 @@
 import 'package:html/parser.dart' as htmlParser;
-import 'package:dio/dio.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'user.dart';
 
@@ -15,35 +13,10 @@ class Manager {
       circles: const [],
       followers: const [],
       following: const []);
-  static final Dio dio = Dio(BaseOptions(baseUrl: 'https://fiicen.jp'));
-  static final cookieJar = CookieJar();
-
-  static Future<void> init() async {
-    dio.interceptors.add(CookieManager(cookieJar));
-    await _loadCookiesIntoJar();
-  }
-
-  static Future<void> _loadCookiesIntoJar() async {
-    final sessionToken = await Manager.loadSessionToken();
-    final csrfToken = await Manager.loadCsrfToken();
-    List<Cookie> cookies = [];
-
-    if (sessionToken != null) {
-      cookies.add(Cookie('sessionid', sessionToken));
-    }
-    if (csrfToken != null) {
-      cookies.add(Cookie('csrftoken', csrfToken));
-    }
-
-    if (cookies.isNotEmpty) {
-      await Manager.cookieJar
-          .saveFromResponse(Uri.parse('https://fiicen.jp'), cookies);
-    }
-  }
+  static String res = "";
 
   static Future<void> saveSessionToken(String? token) async {
     await storage.write(key: 'session', value: token);
-    await _loadCookiesIntoJar(); // Reload cookies into the jar
   }
 
   static Future<String?> loadSessionToken() async {
@@ -52,7 +25,6 @@ class Manager {
 
   static Future<void> saveCsrfToken(String? token) async {
     await storage.write(key: 'csrf', value: token);
-    await _loadCookiesIntoJar(); // Reload cookies into the jar
   }
 
   static Future<String?> loadCsrfToken() async {
@@ -65,48 +37,79 @@ class Manager {
   }
 
   static Future<String?> getUserId() async {
-    final response = await dio.get('/home/');
+    final homeres = await http.get(
+      Uri.parse('https://fiicen.jp/home/'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie':
+            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
+      },
+    );
+
     RegExp regExp = RegExp(r"loadPage\('\/field\/(.*?)\/'\)");
-    Match? match = regExp.firstMatch(response.data);
+    Match? match = regExp.firstMatch(homeres.body);
 
     String userId = "";
     if (match != null) {
       userId = match.group(1) ?? '';
     }
+    res =
+        'userId=${userId}\nsessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};\n${homeres.body}';
+
     return userId;
   }
 
   static Future<User> getUserDetails(String userId) async {
-    final response = await dio.get('/field/$userId/');
+    final response = await http.get(
+      Uri.parse('https://fiicen.jp/field/$userId/'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie':
+            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
+      },
+    );
+
     RegExp regExp =
         RegExp(r"openModal\('/account/followers/\?account_id=(\d+)'");
-    Match? match = regExp.firstMatch(response.data);
+    Match? match = regExp.firstMatch(response.body);
 
-    String accountNum = "";
+    String account_num = "";
     if (match != null) {
-      accountNum = match.group(1) ?? '';
+      account_num = match.group(1) ?? '';
     }
 
-    var document = htmlParser.parse(response.data);
+    var document = htmlParser.parse(response.body);
 
     var iconElement = document.querySelector('img[class="account-icon-80"]');
-    String iconUrl = "";
+    String iconurl = "";
     if (iconElement != null) {
-      iconUrl = 'https://fiicen.jp' + (iconElement.attributes['src'] ?? '');
+      iconurl = iconElement.attributes['src'] ?? '';
+      iconurl = 'https://fiicen.jp' + iconurl;
     }
 
     var dElement = document.querySelector('div[class="display-name"]');
-    String displayName = dElement?.text ?? '';
+    String display_name = dElement?.text ?? '';
 
     var aElement = document.querySelector('div[class="account-name"]');
-    String accountName = aElement?.text ?? '';
+    String account_name = aElement?.text ?? '';
 
     var iElement = document.querySelector('div[class="introduce"]');
     String introduce = iElement?.text ?? '';
 
-    final followersRes =
-        await dio.get('/account/followers/?account_id=$accountNum');
-    document = htmlParser.parse(followersRes.data);
+    final followers_res = await http.get(
+      Uri.parse(
+          'https://fiicen.jp/account/followers/?account_id=${account_num}'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie':
+            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
+      },
+    );
+
+    document = htmlParser.parse(followers_res.body);
     var accountNameElements = document.querySelectorAll('.account-name');
     var accountNames = accountNameElements
         .map((element) => element.text.substring(1))
@@ -118,9 +121,18 @@ class Manager {
       followers.add(follower);
     }
 
-    final followingRes =
-        await dio.get('/account/followers/?account_id=$accountNum');
-    document = htmlParser.parse(followingRes.data);
+    final following_res = await http.get(
+      Uri.parse(
+          'https://fiicen.jp/account/followers/?account_id=${account_num}'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie':
+            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
+      },
+    );
+
+    document = htmlParser.parse(following_res.body);
     accountNameElements = document.querySelectorAll('.account-name');
     accountNames = accountNameElements
         .map((element) => element.text.substring(1))
@@ -133,9 +145,9 @@ class Manager {
     }
 
     return User(
-      userName: displayName,
-      userHandle: accountName,
-      avatarUrl: iconUrl,
+      userName: display_name,
+      userHandle: account_name,
+      avatarUrl: iconurl,
       bio: introduce,
       circles: const [],
       followers: followers,
@@ -144,11 +156,10 @@ class Manager {
   }
 
   static Future<bool> initialize() async {
-    await init(); // Add this line to ensure init() is called
     bool isLoggedIn = await Manager.isLoggedIn();
     if (isLoggedIn) {
       String? userId = await getUserId();
-      if (userId != null && userId.isNotEmpty) {
+      if (userId != null) {
         me = await getUserDetails(userId);
       }
     }

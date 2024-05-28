@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+import 'appbar.dart';
+import '../backends/manager.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as html;
-import '../backends/manager.dart';
-import 'appbar.dart';
 import 'timeline.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,28 +15,24 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    Manager.init();
-  }
-
   Future<void> login() async {
-    final response = await Manager.dio.get(
-      '/login/',
-      options: Options(headers: {'Content-Type': 'text/html'}),
+    final response = await http.get(
+      Uri.parse('https://fiicen.jp/login/'),
+      headers: {
+        'Content-Type': 'text/html',
+      },
     );
 
     // レスポンスヘッダーからset-cookieヘッダーを取得
-    String? setCookieHeader = response.headers.map['set-cookie']?.join(';');
+    String? setCookieHeader = response.headers['set-cookie'];
     if (setCookieHeader != null) {
       // set-cookieヘッダーを';'で分割して、csrftokenを含む行を検索
       List<String> cookies = setCookieHeader.split(';');
       String csrfToken = "";
       for (String cookie in cookies) {
-        if (cookie.startsWith('csrftoken=')) {
+        if (cookie.trim().startsWith('csrftoken=')) {
           // csrftokenの値を取得
-          csrfToken = cookie.split('=')[1];
+          csrfToken = cookie.trim().split('=')[1];
           await Manager.saveCsrfToken(csrfToken);
           break;
         }
@@ -46,45 +42,58 @@ class _LoginPageState extends State<LoginPage> {
       String password = _passwordController.text;
 
       // HTMLを解析
-      var document = htmlParser.parse(response.data);
+      var document = htmlParser.parse(response.body);
 
       // input要素を検索
       var inputElement =
           document.querySelector('input[name="csrfmiddlewaretoken"]');
 
-      String middleToken = "";
+      String middletoken = "";
       // input要素が見つかった場合は、その値を返す
       if (inputElement != null) {
-        middleToken = inputElement.attributes['value'] ?? '';
+        middletoken = inputElement.attributes['value'] ?? '';
       }
 
-      var loginRes = await Manager.dio.post(
-        '/login/',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'Fiicener/1.00',
-          },
-          followRedirects: false,
-        ),
-        data: {
-          "csrfmiddlewaretoken": middleToken,
-          "account_name": username,
-          "password": password,
-        },
-      );
+      var loginres =
+          await http.post(Uri.parse('https://fiicen.jp/login/'), headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie': 'csrftoken=$csrfToken;',
+      }, body: {
+        "csrfmiddlewaretoken": middletoken,
+        "account_name": username,
+        "password": password,
+      });
 
-      if (loginRes.statusCode == 302) {
+      if (loginres.statusCode == 302) {
         // レスポンスヘッダーからset-cookieヘッダーを取得
-        String? setCookieHeader = loginRes.headers.map['set-cookie']?.join(';');
+        String? setCookieHeader = loginres.headers['set-cookie'];
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Notify'),
+              content: Text('${setCookieHeader}'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
         if (setCookieHeader != null) {
           // set-cookieヘッダーを';'で分割して、sessionidを含む行を検索
           List<String> cookies = setCookieHeader.split(';');
           String sessionid = "";
           for (String cookie in cookies) {
-            if (cookie.startsWith('sessionid=')) {
+            if (cookie.trim().startsWith('sessionid=')) {
               // sessionidの値を取得
-              sessionid = cookie.split('=')[1];
+              sessionid = cookie.trim().split('=')[1];
               break;
             }
           }
@@ -94,24 +103,6 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MyHomePage()),
-          );
-        } else {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('エラー！'),
-                content: Text('セッションIDの取得に失敗しました。'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
           );
         }
       } else {
