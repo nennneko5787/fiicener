@@ -144,10 +144,11 @@ class Manager {
   }
 
   static Future<bool> initialize() async {
+    await init(); // Add this line to ensure init() is called
     bool isLoggedIn = await Manager.isLoggedIn();
     if (isLoggedIn) {
       String? userId = await getUserId();
-      if (userId != null) {
+      if (userId != null && userId.isNotEmpty) {
         me = await getUserDetails(userId);
       }
     }
