@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'appbar.dart';
-import '../backends/manager.dart';
+import 'package:dio/dio.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as html;
+import '../backends/manager.dart';
+import 'appbar.dart';
 import 'timeline.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,16 +15,18 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    Manager.init();
+  }
+
   Future<void> login() async {
-    final response = await http.get(
-      Uri.parse('https://fiicen.jp/login/'),
-      headers: {
-        'Content-Type': 'text/html',
-      },
-    );
+    final response = await Manager.dio.get('/login/',
+        options: Options(headers: {'Content-Type': 'text/html'}));
 
     // レスポンスヘッダーからset-cookieヘッダーを取得
-    String? setCookieHeader = response.headers['set-cookie'];
+    String? setCookieHeader = response.headers['set-cookie']?.first;
     if (setCookieHeader != null) {
       // set-cookieヘッダーを';'で分割して、csrftokenを含む行を検索
       List<String> cookies = setCookieHeader.split(';');
@@ -42,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       String password = _passwordController.text;
 
       // HTMLを解析
-      var document = htmlParser.parse(response.body);
+      var document = htmlParser.parse(response.data);
 
       // input要素を検索
       var inputElement =
@@ -54,26 +56,32 @@ class _LoginPageState extends State<LoginPage> {
         middletoken = inputElement.attributes['value'] ?? '';
       }
 
-      var loginres =
-          await http.post(Uri.parse('https://fiicen.jp/login/'), headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'Fiicener/1.00',
-        'Cookie': 'csrftoken=$csrfToken',
-      }, body: {
-        "csrfmiddlewaretoken": middletoken,
-        "account_name": username,
-        "password": password,
-      });
+      var loginRes = await Manager.dio.post(
+        '/login/',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'Fiicener/1.00',
+            'Cookie': 'csrftoken=$csrfToken',
+          },
+          followRedirects: false,
+        ),
+        data: {
+          "csrfmiddlewaretoken": middletoken,
+          "account_name": username,
+          "password": password,
+        },
+      );
 
-      if (loginres.statusCode == 302) {
+      if (loginRes.statusCode == 302) {
         // レスポンスヘッダーからset-cookieヘッダーを取得
-        String? setCookieHeader = loginres.headers['set-cookie'];
+        String? setCookieHeader = loginRes.headers['set-cookie']?.first;
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Notify'),
-              content: Text('${setCookieHeader}'),
+              content: Text('$setCookieHeader'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
