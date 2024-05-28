@@ -16,15 +16,29 @@ class Manager {
       followers: const [],
       following: const []);
   static String res = "";
-  static final Dio dio = Dio()..options.baseUrl = 'https://fiicen.jp';
+  static final Dio dio = Dio(BaseOptions(baseUrl: 'https://fiicen.jp'));
   static final cookieJar = CookieJar();
 
-  static void init() {
+  static Future<void> init() async {
     dio.interceptors.add(CookieManager(cookieJar));
+    await _loadCookiesIntoJar();
+  }
+
+  static Future<void> _loadCookiesIntoJar() async {
+    final sessionToken = await loadSessionToken();
+    final csrfToken = await loadCsrfToken();
+    if (sessionToken != null && csrfToken != null) {
+      final cookies = [
+        Cookie('sessionid', sessionToken),
+        Cookie('csrftoken', csrfToken)
+      ];
+      await cookieJar.saveFromResponse(Uri.parse('https://fiicen.jp'), cookies);
+    }
   }
 
   static Future<void> saveSessionToken(String? token) async {
     await storage.write(key: 'session', value: token);
+    await _loadCookiesIntoJar(); // Reload cookies into the jar
   }
 
   static Future<String?> loadSessionToken() async {
@@ -33,6 +47,7 @@ class Manager {
 
   static Future<void> saveCsrfToken(String? token) async {
     await storage.write(key: 'csrf', value: token);
+    await _loadCookiesIntoJar(); // Reload cookies into the jar
   }
 
   static Future<String?> loadCsrfToken() async {
@@ -64,30 +79,30 @@ class Manager {
         RegExp(r"openModal\('/account/followers/\?account_id=(\d+)'");
     Match? match = regExp.firstMatch(response.data);
 
-    String account_num = "";
+    String accountNum = "";
     if (match != null) {
-      account_num = match.group(1) ?? '';
+      accountNum = match.group(1) ?? '';
     }
 
     var document = htmlParser.parse(response.data);
 
     var iconElement = document.querySelector('img[class="account-icon-80"]');
-    String iconurl = "";
+    String iconUrl = "";
     if (iconElement != null) {
-      iconurl = 'https://fiicen.jp' + (iconElement.attributes['src'] ?? '');
+      iconUrl = 'https://fiicen.jp' + (iconElement.attributes['src'] ?? '');
     }
 
     var dElement = document.querySelector('div[class="display-name"]');
-    String display_name = dElement?.text ?? '';
+    String displayName = dElement?.text ?? '';
 
     var aElement = document.querySelector('div[class="account-name"]');
-    String account_name = aElement?.text ?? '';
+    String accountName = aElement?.text ?? '';
 
     var iElement = document.querySelector('div[class="introduce"]');
     String introduce = iElement?.text ?? '';
 
     final followersRes =
-        await dio.get('/account/followers/?account_id=$account_num');
+        await dio.get('/account/followers/?account_id=$accountNum');
     document = htmlParser.parse(followersRes.data);
     var accountNameElements = document.querySelectorAll('.account-name');
     var accountNames = accountNameElements
@@ -101,7 +116,7 @@ class Manager {
     }
 
     final followingRes =
-        await dio.get('/account/followers/?account_id=$account_num');
+        await dio.get('/account/followers/?account_id=$accountNum');
     document = htmlParser.parse(followingRes.data);
     accountNameElements = document.querySelectorAll('.account-name');
     accountNames = accountNameElements
@@ -115,9 +130,9 @@ class Manager {
     }
 
     return User(
-      userName: display_name,
-      userHandle: account_name,
-      avatarUrl: iconurl,
+      userName: displayName,
+      userHandle: accountName,
+      avatarUrl: iconUrl,
       bio: introduce,
       circles: const [],
       followers: followers,

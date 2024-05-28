@@ -22,11 +22,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> login() async {
-    final response = await Manager.dio.get('/login/',
-        options: Options(headers: {'Content-Type': 'text/html'}));
+    final response = await Manager.dio.get(
+      '/login/',
+      options: Options(headers: {'Content-Type': 'text/html'}),
+    );
 
     // レスポンスヘッダーからset-cookieヘッダーを取得
-    String? setCookieHeader = response.headers['set-cookie']?.first;
+    String? setCookieHeader = response.headers.map['set-cookie']?.join(';');
     if (setCookieHeader != null) {
       // set-cookieヘッダーを';'で分割して、csrftokenを含む行を検索
       List<String> cookies = setCookieHeader.split(';');
@@ -50,10 +52,10 @@ class _LoginPageState extends State<LoginPage> {
       var inputElement =
           document.querySelector('input[name="csrfmiddlewaretoken"]');
 
-      String middletoken = "";
+      String middleToken = "";
       // input要素が見つかった場合は、その値を返す
       if (inputElement != null) {
-        middletoken = inputElement.attributes['value'] ?? '';
+        middleToken = inputElement.attributes['value'] ?? '';
       }
 
       var loginRes = await Manager.dio.post(
@@ -62,12 +64,11 @@ class _LoginPageState extends State<LoginPage> {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'User-Agent': 'Fiicener/1.00',
-            'Cookie': 'csrftoken=$csrfToken',
           },
           followRedirects: false,
         ),
         data: {
-          "csrfmiddlewaretoken": middletoken,
+          "csrfmiddlewaretoken": middleToken,
           "account_name": username,
           "password": password,
         },
@@ -75,24 +76,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (loginRes.statusCode == 302) {
         // レスポンスヘッダーからset-cookieヘッダーを取得
-        String? setCookieHeader = loginRes.headers['set-cookie']?.first;
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Notify'),
-              content: Text('$setCookieHeader'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
+        String? setCookieHeader = loginRes.headers.map['set-cookie']?.join(';');
         if (setCookieHeader != null) {
           // set-cookieヘッダーを';'で分割して、sessionidを含む行を検索
           List<String> cookies = setCookieHeader.split(';');
@@ -110,6 +94,24 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MyHomePage()),
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('エラー！'),
+                content: Text('セッションIDの取得に失敗しました。'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
           );
         }
       } else {
