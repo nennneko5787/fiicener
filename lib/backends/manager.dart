@@ -25,14 +25,20 @@ class Manager {
   }
 
   static Future<void> _loadCookiesIntoJar() async {
-    final sessionToken = await loadSessionToken();
-    final csrfToken = await loadCsrfToken();
-    if (sessionToken != null && csrfToken != null) {
-      final cookies = [
-        Cookie('sessionid', sessionToken),
-        Cookie('csrftoken', csrfToken)
-      ];
-      await cookieJar.saveFromResponse(Uri.parse('https://fiicen.jp'), cookies);
+    final sessionToken = await Manager.loadSessionToken();
+    final csrfToken = await Manager.loadCsrfToken();
+    List<Cookie> cookies = [];
+
+    if (sessionToken != null) {
+      cookies.add(Cookie('sessionid', sessionToken));
+    }
+    if (csrfToken != null) {
+      cookies.add(Cookie('csrftoken', csrfToken));
+    }
+
+    if (cookies.isNotEmpty) {
+      await Manager.cookieJar
+          .saveFromResponse(Uri.parse('https://fiicen.jp'), cookies);
     }
   }
 
