@@ -3,6 +3,7 @@ import 'drawer.dart';
 import 'circles.dart';
 import 'footer.dart'; // Footer ウィジェットを提供するファイルをインポート
 import 'appbar.dart';
+import 'post.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage();
@@ -12,15 +13,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  StatefulWidget body = CircleMenu();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarMenu(),
       drawer: DrawerMenu(),
-      body: CircleMenu(),
+      body: body,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // ボタンが押された時の処理
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PostMenu()),
+          );
         },
         tooltip: 'サークルを飛ばす',
         child: Icon(Icons.add),

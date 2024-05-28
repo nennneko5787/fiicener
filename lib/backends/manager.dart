@@ -13,7 +13,6 @@ class Manager {
       circles: const [],
       followers: const [],
       following: const []);
-  static String res = "";
 
   static Future<void> saveSessionToken(String? token) async {
     await storage.write(key: 'session', value: token);
@@ -56,8 +55,6 @@ class Manager {
     if (match != null) {
       userId = match.group(1) ?? '';
     }
-    res =
-        'userId=${userId}\nsessionid=${session}; csrftoken=${csrf};\n${homeres.body}';
 
     return userId;
   }
