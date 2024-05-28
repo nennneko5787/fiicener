@@ -22,7 +22,7 @@ class _CircleMenuState extends State<CircleMenu> {
           circles: [],
           followers: [],
           following: []),
-      content: '${Manager.res}',
+      content: 'just setting up my fiicener',
       replys: [],
       reflyusers: [],
       likedusers: [],

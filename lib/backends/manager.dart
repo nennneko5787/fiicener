@@ -15,7 +15,6 @@ class Manager {
       circles: const [],
       followers: const [],
       following: const []);
-  static String res = "";
   static final Dio dio = Dio(BaseOptions(baseUrl: 'https://fiicen.jp'));
   static final cookieJar = CookieJar();
 
@@ -74,8 +73,6 @@ class Manager {
     if (match != null) {
       userId = match.group(1) ?? '';
     }
-    res =
-        'userId=${userId}\nsessionid=${await loadSessionToken()},SameSite=Lax; csrftoken=${await loadCsrfToken()}\n${response.data}';
     return userId;
   }
 
