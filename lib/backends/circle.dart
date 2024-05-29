@@ -14,6 +14,6 @@ class Circle {
     required this.replys,
     required this.reflyusers,
     required this.likedusers,
-    this.attachment,
+    required this.attachment,
   });
 }
