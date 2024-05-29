@@ -173,6 +173,7 @@ class Manager {
         replys: [],
         reflyusers: [],
         likedusers: [],
+        attachment: imageUrl,
       ));
     }
     return circleslist;
