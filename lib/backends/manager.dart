@@ -13,6 +13,7 @@ class Manager {
     bio: "",
     circles: const [],
   );
+  static String res = "";
 
   static Future<void> saveSessionToken(String? token) async {
     await storage.write(key: 'session', value: token);

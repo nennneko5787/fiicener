@@ -41,6 +41,8 @@ class User {
     // 正規表現で全てのマッチを見つける
     Iterable<Match> matches = regExp.allMatches(followers_res.body);
 
+    Manager.res = followers_res.body;
+
     // 各マッチについて、キャプチャしたグループをリストに追加
     for (var match in matches) {
       accountNames.add(match.group(1)!); // マッチした部分をリストに追加
