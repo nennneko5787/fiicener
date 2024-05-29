@@ -178,6 +178,7 @@ class Manager {
         likedusers: [],
       ));
     }
+    return circleslist;
   }
 
   static Future<bool> initialize() async {
