@@ -2,6 +2,7 @@ import 'package:html/parser.dart' as htmlParser;
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'user.dart';
+import 'circle.dart';
 
 class Manager {
   static final storage = FlutterSecureStorage();
@@ -13,7 +14,6 @@ class Manager {
     bio: "",
     circles: const [],
   );
-  static String res = "";
 
   static Future<void> saveSessionToken(String? token) async {
     await storage.write(key: 'session', value: token);
@@ -108,32 +108,6 @@ class Manager {
     var iElement = document.querySelector('div[class="introduce"]');
     String introduce = iElement?.text ?? '';
 
-    /*
-    final following_res = await http.get(
-      Uri.parse(
-          'https://fiicen.jp/account/followers/?account_id=${account_num}'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
-      },
-    );
-
-    document = htmlParser.parse(following_res.body);
-    accountNameElements = document.querySelectorAll('.account-name');
-    accountNames = accountNameElements
-        .map((element) => element.text.substring(1))
-        .toList();
-
-    List<User> following = [];
-
-    for (String username in accountNames) {
-      User follower = await getUserDetails(username);
-      following.add(follower);
-    }
-    */
-
     return User(
       userName: display_name,
       userHandle: account_name,
@@ -142,6 +116,68 @@ class Manager {
       bio: introduce,
       circles: const [],
     );
+  }
+
+  static Future<List<Circle>> getHomeCircles() async {
+    String? session = await loadSessionToken();
+    String? csrf = await loadCsrfToken();
+
+    final response = await http.get(
+      Uri.parse('https://fiicen.jp/circle/block/home/1/'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie': 'sessionid=${session}; csrftoken=${csrf};',
+      },
+    );
+
+    List<Circle> circleslist = [];
+
+    // HTMLをパースする
+    var document = htmlParser.parse(response.body);
+
+    // サークル要素をすべて取得する
+    List circles = document.querySelectorAll('.circle');
+
+    // 各サークルの情報を抽出する
+    for (var circle in circles) {
+      // ユーザー名
+      String? username =
+          circle.querySelector('.circle-created-display-name')?.text.trim();
+
+      // アカウント名
+      String? accountName = circle.querySelector('.account-name')?.text.trim();
+      if (accountName != null) {
+        accountName = accountName.replaceAll('@', ''); // @を取り除く
+      }
+
+      // テキスト内容
+      String? textContent = circle
+          .querySelector('.circle-content > div:nth-child(2)')
+          ?.text
+          .trim();
+
+      // 添付画像URL (存在する場合)
+      String? imageUrl =
+          circle.querySelector('.attached-image')?.attributes['src'];
+
+      /* サークル情報を出力
+      print('ユーザー名: $username');
+      print('アカウント名: $accountName');
+      print('テキスト: $textContent');
+      if (imageUrl != null) {
+        print('画像URL: $imageUrl');
+      }
+      print('---');
+      */
+      circleslist.add(Circle(
+        user: await getUserDetails("${accountName}"),
+        content: '${textContent}',
+        replys: [],
+        reflyusers: [],
+        likedusers: [],
+      ));
+    }
   }
 
   static Future<bool> initialize() async {

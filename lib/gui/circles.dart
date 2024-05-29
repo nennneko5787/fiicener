@@ -12,22 +12,20 @@ class CircleMenu extends StatefulWidget {
 }
 
 class _CircleMenuState extends State<CircleMenu> {
-  final List<Circle> circles = [
-    Circle(
-      user: Manager.me,
-      content: '${Manager.res}',
-      replys: [],
-      reflyusers: [],
-      likedusers: [],
-    ),
-    // Add more circles here
-  ];
+  late Future<List<Circle>> _circlesFuture;
+  List<Circle> circles = []; // circles リストを定義
+
+  @override
+  void initState() {
+    super.initState();
+    _circlesFuture = Manager.getHomeCircles();
+  }
 
   Future<void> _refresh() async {
     HapticFeedback.lightImpact();
-    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1));
     setState(() {
-      // Refresh the data
+      _circlesFuture = Manager.getHomeCircles();
     });
   }
 
@@ -65,26 +63,30 @@ class _CircleMenuState extends State<CircleMenu> {
     );
   }
 
-  Widget _buildActions(int index) {
+  Widget _buildActions(int index, Circle circle) {
+    // Circle クラスを引数として追加
     return Row(
       children: [
         IconButton(
           icon: const Icon(Icons.comment),
           onPressed: () => _onCommentButtonPressed(index),
         ),
-        Text(circles[index].replys.length.toString()),
+        Text(circle.replys.length
+            .toString()), // circle パラメータを使用して対応するサークルの replys リストにアクセス
         const SizedBox(width: 16),
         IconButton(
           icon: const Icon(Icons.repeat),
           onPressed: () => _onRetweetButtonPressed(index),
         ),
-        Text(circles[index].reflyusers.length.toString()),
+        Text(circle.reflyusers.length
+            .toString()), // circle パラメータを使用して対応するサークルの reflyusers リストにアクセス
         const SizedBox(width: 16),
         IconButton(
           icon: const Icon(Icons.favorite),
           onPressed: () => _onLikeButtonPressed(index),
         ),
-        Text(circles[index].likedusers.length.toString()),
+        Text(circle.likedusers.length
+            .toString()), // circle パラメータを使用して対応するサークルの likedusers リストにアクセス
       ],
     );
   }
@@ -93,40 +95,52 @@ class _CircleMenuState extends State<CircleMenu> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: _refresh,
-      child: Scrollbar(
-        // Scrollbarの外側にListViewを配置します
-        child: ListView.builder(
-          scrollDirection: Axis.vertical, // 縦スクロールを設定
-          itemCount: circles.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      _buildCircleAvatar(circles[index]),
-                      const SizedBox(
-                          width: 8), // Spacing between avatar and text
-                      _buildUserInfo(circles[index]),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(circles[index].content),
-                  _buildActions(index),
-                  Divider(
-                    color: Colors.grey, // 区切り線の色を設定します
-                    thickness: 1, // 区切り線の太さを設定します
-                    height: 2, // 区切り線の上下の余白を設定します
-                  ),
-                ],
-              ),
-              onTap: () {
-                // Handle tweet tap
-              },
+      child: FutureBuilder<List<Circle>>(
+        future: _circlesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
             );
-          },
-        ),
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            return Scrollbar(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            _buildCircleAvatar(snapshot.data![index]),
+                            const SizedBox(width: 8),
+                            _buildUserInfo(snapshot.data![index]),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(snapshot.data![index].content),
+                        _buildActions(
+                            index, snapshot.data![index]), // circle パラメータを追加
+                        Divider(
+                          color: Colors.grey,
+                          thickness: 1,
+                          height: 2,
+                        ),
+                      ],
+                    ),
+                    onTap: () {},
+                  );
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }
