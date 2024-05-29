@@ -14,15 +14,8 @@ class CircleMenu extends StatefulWidget {
 class _CircleMenuState extends State<CircleMenu> {
   final List<Circle> circles = [
     Circle(
-      user: User(
-        userName: 'ねんねこ',
-        userHandle: '@nennneko5787',
-        userID: '3747',
-        avatarUrl: 'https://fiicen.jp/media/account_icon/3747.jpg?size=100',
-        bio: "${Manager.res}",
-        circles: [],
-      ),
-      content: 'Test',
+      user: Manager.me,
+      content: '${Manager.res}',
       replys: [],
       reflyusers: [],
       likedusers: [],
