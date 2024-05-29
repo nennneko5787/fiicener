@@ -32,11 +32,19 @@ class User {
       },
     );
 
-    var document = htmlParser.parse(followers_res.body);
-    var accountNameElements = document.querySelectorAll('.account-name');
-    var accountNames = accountNameElements
-        .map((element) => element.text.substring(1))
-        .toList();
+    // 抽出したい部分にマッチする正規表現
+    RegExp regExp = RegExp(r'/field/([^/]+)/');
+
+    // 結果を格納するリスト
+    List<String> accountNames = [];
+
+    // 正規表現で全てのマッチを見つける
+    Iterable<Match> matches = regExp.allMatches(followers_res.body);
+
+    // 各マッチについて、キャプチャしたグループをリストに追加
+    for (var match in matches) {
+      accountNames.add(match.group(1)!); // マッチした部分をリストに追加
+    }
 
     List<User> followers = [];
 
@@ -60,11 +68,19 @@ class User {
       },
     );
 
-    var document = htmlParser.parse(following_res.body);
-    var accountNameElements = document.querySelectorAll('.account-name');
-    var accountNames = accountNameElements
-        .map((element) => element.text.substring(1))
-        .toList();
+    // 抽出したい部分にマッチする正規表現
+    RegExp regExp = RegExp(r'/field/([^/]+)/');
+
+    // 結果を格納するリスト
+    List<String> accountNames = [];
+
+    // 正規表現で全てのマッチを見つける
+    Iterable<Match> matches = regExp.allMatches(following_res.body);
+
+    // 各マッチについて、キャプチャしたグループをリストに追加
+    for (var match in matches) {
+      accountNames.add(match.group(1)!); // マッチした部分をリストに追加
+    }
 
     List<User> following = [];
 
