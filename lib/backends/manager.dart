@@ -152,10 +152,7 @@ class Manager {
       }
 
       // テキスト内容
-      String? textContent = circle
-          .querySelector('.circle-content > div:nth-child(2)')
-          ?.text
-          .trim();
+      String? textContent = circle.querySelector('.circle-content > div:not(.reply-to)')?.text.trim();
 
       // 添付画像URL (存在する場合)
       String? imageUrl =
