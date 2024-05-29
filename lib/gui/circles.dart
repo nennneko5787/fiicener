@@ -19,7 +19,7 @@ class _CircleMenuState extends State<CircleMenu> {
         userHandle: '@nennneko5787',
         userID: '3747',
         avatarUrl: 'https://fiicen.jp/media/account_icon/3747.jpg?size=100',
-        bio: "test",
+        bio: "${Manager.res}",
         circles: [],
       ),
       content: 'Test',
