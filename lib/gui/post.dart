@@ -30,7 +30,7 @@ class _PostMenu extends State<PostMenu> {
 
   Future<void> _postPost() async {
     final String postContent = _postController.text;
-    if (postContent.isNotEmpty && _selectedImage != null) {
+    if (postContent.isNotEmpty) {
       try {
         // 非同期関数の呼び出しには await を使用
         String? session = await Manager.loadSessionToken();
@@ -54,10 +54,7 @@ class _PostMenu extends State<PostMenu> {
 
         if (response.statusCode == 200) {
           // 投稿が成功した場合、タイムライン画面に遷移
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => MyHomePage()),
-          );
+          Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Post posted!')),
           );
@@ -79,7 +76,7 @@ class _PostMenu extends State<PostMenu> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('本文は空欄であってはいけません。または画像が選択されていません。')),
+        const SnackBar(content: Text('本文は空欄であってはいけません。')),
       );
     }
   }

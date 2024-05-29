@@ -6,13 +6,13 @@ import 'user.dart';
 class Manager {
   static final storage = FlutterSecureStorage();
   static User me = User(
-      userName: '',
-      userHandle: '',
-      avatarUrl: '',
-      bio: "",
-      circles: const [],
-      followers: const [],
-      following: const []);
+    userName: '',
+    userHandle: '',
+    userID: '',
+    avatarUrl: '',
+    bio: "",
+    circles: const [],
+  );
 
   static Future<void> saveSessionToken(String? token) async {
     await storage.write(key: 'session', value: token);
@@ -63,12 +63,11 @@ class Manager {
     if (userId == "") {
       return User(
         userName: "ユーザーの取得に失敗しました。",
-        userHandle: "missing",
+        userHandle: "",
+        userID: "",
         avatarUrl: "",
         bio: "ユーザーの取得に失敗しました。",
         circles: const [],
-        followers: const [],
-        following: const [],
       );
     }
     final response = await http.get(
@@ -109,30 +108,6 @@ class Manager {
     String introduce = iElement?.text ?? '';
 
     /*
-    final followers_res = await http.get(
-      Uri.parse(
-          'https://fiicen.jp/account/followers/?account_id=${account_num}'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
-      },
-    );
-
-    document = htmlParser.parse(followers_res.body);
-    var accountNameElements = document.querySelectorAll('.account-name');
-    var accountNames = accountNameElements
-        .map((element) => element.text.substring(1))
-        .toList();
-
-    List<User> followers = [];
-
-    for (String username in accountNames) {
-      User follower = await getUserDetails(username);
-      followers.add(follower);
-    }
-
     final following_res = await http.get(
       Uri.parse(
           'https://fiicen.jp/account/followers/?account_id=${account_num}'),
@@ -161,11 +136,10 @@ class Manager {
     return User(
       userName: display_name,
       userHandle: account_name,
+      userID: account_num,
       avatarUrl: iconurl,
       bio: introduce,
       circles: const [],
-      followers: const [], // followers
-      following: const [], // following
     );
   }
 

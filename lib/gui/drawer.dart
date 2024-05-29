@@ -11,6 +11,24 @@ class DrawerMenu extends StatefulWidget {
 }
 
 class _DrawerMenuState extends State<DrawerMenu> {
+  int followingCount = 0;
+  int followersCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final following = await Manager.me.getFollowing();
+    final followers = await Manager.me.getFollowers();
+    setState(() {
+      followingCount = following.length;
+      followersCount = followers.length;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -29,12 +47,12 @@ class _DrawerMenuState extends State<DrawerMenu> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'フォロー中: ${Manager.me.following.length}',
+                    'フォロー中: $followingCount',
                     style: TextStyle(fontSize: 12),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'フォロワー: ${Manager.me.followers.length}',
+                    'フォロワー: $followersCount',
                     style: TextStyle(fontSize: 12),
                   ),
                 ],

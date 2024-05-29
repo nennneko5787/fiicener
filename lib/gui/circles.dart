@@ -15,14 +15,13 @@ class _CircleMenuState extends State<CircleMenu> {
   final List<Circle> circles = [
     Circle(
       user: User(
-          userName: 'ねんねこ',
-          userHandle: '@nennneko5787',
-          avatarUrl:
-              'https://cdn.discordapp.com/avatars/1048448686914551879/a4093ba46ee42126de6df6d250891e9e.png?size=1024',
-          bio: "test",
-          circles: [],
-          followers: [],
-          following: []),
+        userName: 'ねんねこ',
+        userHandle: '@nennneko5787',
+        userID: '3747',
+        avatarUrl: 'https://fiicen.jp/media/account_icon/3747.jpg?size=100',
+        bio: "test",
+        circles: [],
+      ),
       content: 'Test',
       replys: [],
       reflyusers: [],
