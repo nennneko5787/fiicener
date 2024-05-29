@@ -44,11 +44,13 @@ class _PostMenu extends State<PostMenu> {
         request.headers['X-Csrftoken'] = '${csrf}';
 
         request.fields['contents'] = postContent;
-        request.files.add(await http.MultipartFile.fromPath(
-          'attached_image',
-          _selectedImage!.path,
-          contentType: MediaType('image', 'jpeg'),
-        ));
+				if (_selectedImage != null) {
+	        request.files.add(await http.MultipartFile.fromPath(
+	          'attached_image',
+	          _selectedImage!.path,
+	          contentType: MediaType('image', 'jpeg'),
+	        ));
+				}
 
         var response = await request.send();
 
