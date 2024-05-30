@@ -141,10 +141,6 @@ class Manager {
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
-      // ユーザー名
-      String? username =
-          circle.querySelector('.circle-created-display-name')?.text.trim();
-
       // アカウント名
       String? accountName = circle.querySelector('.account-name')?.text.trim();
       if (accountName != null) {
@@ -153,7 +149,7 @@ class Manager {
 
       // テキスト内容
       String? textContent = circle
-          .querySelector('.circle-content > div:nth-child(2)')
+          .querySelector('.circle-content > div:not(.reply-to)')
           ?.text
           .trim();
 
@@ -176,6 +172,7 @@ class Manager {
         replys: [],
         reflyusers: [],
         likedusers: [],
+        attachment: imageUrl,
       ));
     }
     return circleslist;

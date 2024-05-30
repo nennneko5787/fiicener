@@ -3,6 +3,7 @@ import "user.dart";
 class Circle {
   final User user;
   final String content;
+  final String? attachment;
   final List<Circle> replys;
   final List<User> reflyusers;
   final List<User> likedusers;
@@ -13,5 +14,6 @@ class Circle {
     required this.replys,
     required this.reflyusers,
     required this.likedusers,
+    required this.attachment,
   });
 }
