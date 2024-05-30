@@ -118,12 +118,12 @@ class Manager {
     );
   }
 
-  static Future<List<Circle>> getHomeCircles() async {
+  static Future<List<Circle>> getHomeCircles({int page = 1}) async {
     String? session = await loadSessionToken();
     String? csrf = await loadCsrfToken();
 
     final response = await http.get(
-      Uri.parse('https://fiicen.jp/circle/block/home/1/'),
+      Uri.parse('https://fiicen.jp/circle/block/home/$page/'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',

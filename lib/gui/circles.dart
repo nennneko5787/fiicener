@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
-import '../backends/user.dart';
 import '../backends/manager.dart';
+import '../backends/user.dart';
 import 'profile.dart';
 
 class CircleMenu extends StatefulWidget {
@@ -61,13 +61,10 @@ class _CircleMenuState extends State<CircleMenu> {
 
   Widget _buildCircleAvatar(Circle circle) {
     return GestureDetector(
-      onTap: () => {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ProfilePage(user: circle.user)),
-        )
-      },
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage(user: circle.user)),
+      ),
       child: CircleAvatar(
         backgroundImage: NetworkImage(circle.user.avatarUrl),
       ),
@@ -114,24 +111,6 @@ class _CircleMenuState extends State<CircleMenu> {
     );
   }
 
-  Future<void> _onOpenLink(LinkableElement link) async {
-    if (link.url.startsWith('@')) {
-      // Handle mention tap
-      // Extract the username without '@' symbol
-      String username = link.url.substring(1);
-      // Assuming you have a method to get user details by username
-      User user = await Manager.getUserDetail(username);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProfilePage(user: user)),
-      );
-    } else if (await canLaunch(link.url)) {
-      await launch(link.url);
-    } else {
-      throw 'Could not launch $link';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return _isLoading
@@ -166,23 +145,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              Linkify(
-                                onOpen: _onOpenLink,
-                                text: circles[index].content,
-                                options: LinkifyOptions(humanize: false),
-                                linkifiers: [
-                                  UrlLinkifier(),
-                                  EmailLinkifier(),
-                                  CustomLinkifier(
-                                    pattern: r"(?<=^|\s)@\w+",
-                                    format: (match) => match.group(0)!,
-                                    linkifier: (text) => LinkableElement(
-                                      '@${text.substring(1)}',
-                                      text,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              CircleRichText(text: circles[index].content),
                               _buildActions(index, circles[index]),
                               Divider(
                                 color: Colors.grey,
@@ -200,5 +163,73 @@ class _CircleMenuState extends State<CircleMenu> {
               },
             ),
           );
+  }
+}
+
+class CircleRichText extends StatelessWidget {
+  final String text;
+  static const String mentionPattern = r'@(\w+)';
+  static const String urlPattern =
+      r'https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*'; // URLの正規表現パターン
+
+  CircleRichText({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<InlineSpan> children = [];
+
+    RegExp(RegExp.escape(mentionPattern) + '|' + RegExp.escape(urlPattern))
+        .allMatches(text)
+        .forEach((match) {
+      final String matchText = match.group(0)!;
+      if (RegExp(mentionPattern).hasMatch(matchText)) {
+        children.add(
+          TextSpan(
+            text: matchText,
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: Colors.blue,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () async {
+                User _user =
+                    await Manager.getUserDetails(matchText.replaceAll("@", ""));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProfilePage(user: _user)),
+                );
+              },
+          ),
+        );
+      } else if (RegExp(urlPattern).hasMatch(matchText)) {
+        children.add(
+          TextSpan(
+            text: matchText,
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: Colors.blue,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _launchURL(matchText);
+              },
+          ),
+        );
+      }
+    });
+
+    return RichText(
+      text: TextSpan(children: children),
+    );
+  }
+
+  // URLを開く関数
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
