@@ -176,7 +176,7 @@ class CircleRichText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<InlineSpan> children = [];
+    List<InlineSpan> children = [];
 
     children.add(
       TextSpan(
