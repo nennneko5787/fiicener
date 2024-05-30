@@ -178,70 +178,85 @@ class CircleRichText extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<InlineSpan> children = [];
 
-    RegExp(RegExp.escape(mentionPattern) + '|' + RegExp.escape(urlPattern))
-        .allMatches(text)
-        .forEach((match) {
-      final String matchText = match.group(0)!;
-      children.add(
-        TextSpan(
-          text: text.substring(0, match.start), // 一致する前の部分
-        ),
-      );
-      if (RegExp(mentionPattern).hasMatch(matchText)) {
-        // メンションの場合
+    children.add(
+      TextSpan(
+        text: text,
+      ),
+    );
+
+    final matches =
+        RegExp(RegExp.escape(mentionPattern) + '|' + RegExp.escape(urlPattern))
+            .allMatches(text);
+
+    if (matches.isNotEmpty) {
+      children = [];
+      String remainingText = text;
+      matches.forEach((match) {
+        final String matchText = match.group(0)!;
+        final int start = match.start;
+        final int end = match.end;
+
+        // メンションやURLの前にあるテキストを追加
+        if (start > 0) {
+          children.add(
+            TextSpan(
+              text: remainingText.substring(0, start),
+            ),
+          );
+        }
+
+        // メンションやURLを追加
+        if (RegExp(mentionPattern).hasMatch(matchText)) {
+          // メンションの場合
+          children.add(
+            TextSpan(
+              text: matchText,
+              style: TextStyle(
+                decoration: TextDecoration.underline,
+                color: Colors.blue,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () async {
+                  User _user = await Manager.getUserDetails(
+                      matchText.replaceAll("@", ""));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProfilePage(user: _user)),
+                  );
+                },
+            ),
+          );
+        } else if (RegExp(urlPattern).hasMatch(matchText)) {
+          // URLの場合
+          children.add(
+            TextSpan(
+              text: matchText,
+              style: TextStyle(
+                decoration: TextDecoration.underline,
+                color: Colors.blue,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  _launchURL(matchText);
+                },
+            ),
+          );
+        }
+
+        // 残りのテキストを更新
+        remainingText = remainingText.substring(end);
+      });
+
+      // 残りのテキストを追加
+      if (remainingText.isNotEmpty) {
         children.add(
           TextSpan(
-            text: matchText,
-            style: TextStyle(
-              decoration: TextDecoration.underline,
-              color: Colors.blue,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () async {
-                User _user =
-                    await Manager.getUserDetails(matchText.replaceAll("@", ""));
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ProfilePage(user: _user)),
-                );
-              },
-          ),
-        );
-      } else if (RegExp(urlPattern).hasMatch(matchText)) {
-        // URLの場合
-        children.add(
-          TextSpan(
-            text: matchText,
-            style: TextStyle(
-              decoration: TextDecoration.underline,
-              color: Colors.blue,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                _launchURL(matchText);
-              },
+            text: remainingText,
           ),
         );
       }
-      children.add(
-        TextSpan(
-          text: text.substring(match.end), // 一致した後の部分
-        ),
-      );
-    });
-
-    if (children.isEmpty) {
-      children.add(
-        TextSpan(
-          text: text,
-        ),
-      );
     }
-
-    return RichText(
-      text: TextSpan(children: children),
-    );
   }
 
   // URLを開く関数
