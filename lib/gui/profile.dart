@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../backends/user.dart';
-import '../backends/manager.dart';
+import 'followers.dart';
+import 'following.dart';
 
 class ProfilePage extends StatefulWidget {
   final User user;
@@ -12,12 +13,16 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late Future<int> _followersCountFuture;
+  late Future<int> _followingCountFuture;
   late Future<List<User>> _followersFuture;
   late Future<List<User>> _followingFuture;
 
   @override
   void initState() {
     super.initState();
+    _followersCountFuture = widget.user.getFollowersCount();
+    _followingCountFuture = widget.user.getFollowingCount();
     _followersFuture = widget.user.getFollowers();
     _followingFuture = widget.user.getFollowing();
   }
@@ -45,23 +50,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildFollowList(List<User> users) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: users.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage(users[index].avatarUrl),
-          ),
-          title: Text(users[index].userName),
-          subtitle: Text(users[index].userHandle),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     User user = widget.user;
@@ -78,52 +66,76 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               _buildUserInfo(user),
               const SizedBox(height: 20),
-              FutureBuilder<List<User>>(
-                future: _followersFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No followers found'));
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Followers',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      _buildFollowList(snapshot.data!),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              FutureBuilder<List<User>>(
-                future: _followingFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No following found'));
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Following',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      _buildFollowList(snapshot.data!),
-                    ],
-                  );
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FutureBuilder<int>(
+                    future: _followersCountFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error');
+                      } else if (!snapshot.hasData) {
+                        return Text('0');
+                      }
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FollowersPage(
+                                  followersFuture: _followersFuture),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Text(
+                              snapshot.data.toString(),
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            Text('フォロワー', style: TextStyle(fontSize: 16)),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  FutureBuilder<int>(
+                    future: _followingCountFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error');
+                      } else if (!snapshot.hasData) {
+                        return Text('0');
+                      }
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FollowingPage(
+                                  followingFuture: _followingFuture),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Text(
+                              snapshot.data.toString(),
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            Text('フォロー中', style: TextStyle(fontSize: 16)),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

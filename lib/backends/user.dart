@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import "circle.dart";
 import "manager.dart";
 import 'package:html/parser.dart' as htmlParser;
@@ -56,6 +58,34 @@ class User {
     return followers;
   }
 
+  Future<int> getFollowersCount() async {
+    final followers_res = await http.get(
+      Uri.parse(
+          'https://fiicen.jp/account/followers/?account_id=${this.userID}'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie':
+            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
+      },
+    );
+
+    // 抽出したい部分にマッチする正規表現
+    RegExp regExp = RegExp(r'/field/([^/]+)/');
+
+    // 結果を格納するリスト
+    List<String> accountNames = [];
+
+    // 正規表現で全てのマッチを見つける
+    Iterable<Match> matches = regExp.allMatches(followers_res.body);
+
+    // 各マッチについて、キャプチャしたグループをリストに追加
+    for (var match in matches) {
+      accountNames.add(match.group(1)!); // マッチした部分をリストに追加
+    }
+    return accountNames.length;
+  }
+
   Future<List<User>> getFollowing() async {
     final following_res = await http.get(
       Uri.parse(
@@ -90,5 +120,33 @@ class User {
     }
 
     return following;
+  }
+
+  Future<int> getFollowingCount() async {
+    final following_res = await http.get(
+      Uri.parse(
+          'https://fiicen.jp/account/following/?account_id=${this.userID}'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie':
+            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
+      },
+    );
+
+    // 抽出したい部分にマッチする正規表現
+    RegExp regExp = RegExp(r'/field/([^/]+)/');
+
+    // 結果を格納するリスト
+    List<String> accountNames = [];
+
+    // 正規表現で全てのマッチを見つける
+    Iterable<Match> matches = regExp.allMatches(following_res.body);
+
+    // 各マッチについて、キャプチャしたグループをリストに追加
+    for (var match in matches) {
+      accountNames.add(match.group(1)!); // マッチした部分をリストに追加
+    }
+    return accountNames.length;
   }
 }

@@ -22,11 +22,11 @@ class _DrawerMenuState extends State<DrawerMenu> {
   }
 
   Future<void> _loadUserData() async {
-    final following = await Manager.me.getFollowing();
-    final followers = await Manager.me.getFollowers();
+    final following = await Manager.me.getFollowingCount();
+    final followers = await Manager.me.getFollowersCount();
     setState(() {
-      followingCount = following.length;
-      followersCount = followers.length;
+      followingCount = following;
+      followersCount = followers;
     });
   }
 
