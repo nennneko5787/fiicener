@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../backends/manager.dart'; // セッションとCSRFトークンをロードするためのカスタムモジュール
 import 'timeline.dart'; // 投稿後に表示する画面
+import 'profile.dart';
 
 class PostMenu extends StatefulWidget {
   const PostMenu();
@@ -15,7 +16,26 @@ class PostMenu extends StatefulWidget {
 
 class _PostMenu extends State<PostMenu> {
   final TextEditingController _postController = TextEditingController();
+  final ValueNotifier<bool> _isPostButtonEnabled = ValueNotifier(false);
   File? _selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _postController.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    _postController.removeListener(_onTextChanged);
+    _postController.dispose();
+    _isPostButtonEnabled.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    _isPostButtonEnabled.value = _postController.text.isNotEmpty;
+  }
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -28,11 +48,16 @@ class _PostMenu extends State<PostMenu> {
     }
   }
 
+  void _clearImage() {
+    setState(() {
+      _selectedImage = null;
+    });
+  }
+
   Future<void> _postPost() async {
     final String postContent = _postController.text;
     if (postContent.isNotEmpty) {
       try {
-        // 非同期関数の呼び出しには await を使用
         String? session = await Manager.loadSessionToken();
         String? csrf = await Manager.loadCsrfToken();
 
@@ -44,11 +69,13 @@ class _PostMenu extends State<PostMenu> {
         request.headers['X-Csrftoken'] = '${csrf}';
 
         request.fields['contents'] = postContent;
-        request.files.add(await http.MultipartFile.fromPath(
-          'attached_image',
-          _selectedImage!.path,
-          contentType: MediaType('image', 'jpeg'),
-        ));
+        if (_selectedImage != null) {
+          request.files.add(await http.MultipartFile.fromPath(
+            'attached_image',
+            _selectedImage!.path,
+            contentType: MediaType('image', 'jpeg'),
+          ));
+        }
 
         var response = await request.send();
 
@@ -85,14 +112,22 @@ class _PostMenu extends State<PostMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('サークルをポスト'),
+        title: const Text('サークルをポスト'),
         actions: [
-          TextButton(
-            onPressed: _postPost,
-            child: Text(
-              'Post',
-              style: TextStyle(color: Colors.white),
-            ),
+          ValueListenableBuilder<bool>(
+            valueListenable: _isPostButtonEnabled,
+            builder: (context, isEnabled, child) {
+              return ElevatedButton(
+                onPressed: isEnabled ? _postPost : null,
+                child: Text(
+                  'Post',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isEnabled ? Colors.blue : Colors.grey,
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -103,20 +138,31 @@ class _PostMenu extends State<PostMenu> {
             TextField(
               controller: _postController,
               maxLines: null,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: '今、何が起きてる？',
                 border: InputBorder.none,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _pickImage,
               child: Text('画像を選択'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _selectedImage == null
                 ? Text('No image selected.')
-                : Image.file(_selectedImage!),
+                : Column(
+                    children: [
+                      Image.file(_selectedImage!),
+                      TextButton(
+                        onPressed: _clearImage,
+                        child: Text(
+                          '画像を解除',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
           ],
         ),
       ),
@@ -124,6 +170,6 @@ class _PostMenu extends State<PostMenu> {
   }
 }
 
-void main() => runApp(MaterialApp(
+void main() => runApp(const MaterialApp(
       home: PostMenu(),
     ));

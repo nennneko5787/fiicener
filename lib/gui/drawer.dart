@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../backends/manager.dart';
 import 'package:http/http.dart' as http;
 import 'login.dart';
+import 'profile.dart';
 
 class DrawerMenu extends StatefulWidget {
   const DrawerMenu();
@@ -62,7 +63,11 @@ class _DrawerMenuState extends State<DrawerMenu> {
           ListTile(
             title: const Text('プロフィール'),
             onTap: () {
-              // サイドメニューアイテム1がタップされたときの処理
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ProfilePage(user: Manager.me)),
+              );
             },
           ),
           Divider(
