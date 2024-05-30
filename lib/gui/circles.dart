@@ -182,7 +182,13 @@ class CircleRichText extends StatelessWidget {
         .allMatches(text)
         .forEach((match) {
       final String matchText = match.group(0)!;
+      children.add(
+        TextSpan(
+          text: text.substring(0, match.start), // 一致する前の部分
+        ),
+      );
       if (RegExp(mentionPattern).hasMatch(matchText)) {
+        // メンションの場合
         children.add(
           TextSpan(
             text: matchText,
@@ -203,6 +209,7 @@ class CircleRichText extends StatelessWidget {
           ),
         );
       } else if (RegExp(urlPattern).hasMatch(matchText)) {
+        // URLの場合
         children.add(
           TextSpan(
             text: matchText,
@@ -217,6 +224,11 @@ class CircleRichText extends StatelessWidget {
           ),
         );
       }
+      children.add(
+        TextSpan(
+          text: text.substring(match.end), // 一致した後の部分
+        ),
+      );
     });
 
     return RichText(
