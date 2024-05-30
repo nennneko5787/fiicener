@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/manager.dart';
@@ -145,7 +144,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              CircleRichText(text: circles[index].content),
+                              Text(circles[index].content),
                               _buildActions(index, circles[index]),
                               Divider(
                                 color: Colors.grey,
@@ -163,114 +162,5 @@ class _CircleMenuState extends State<CircleMenu> {
               },
             ),
           );
-  }
-}
-
-class CircleRichText extends StatelessWidget {
-  final String text;
-  static const String mentionPattern = r'@(\w+)';
-  static const String urlPattern =
-      r'https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*'; // URLの正規表現パターン
-
-  CircleRichText({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    List<InlineSpan> children = [];
-
-    children.add(
-      TextSpan(
-        text: text,
-      ),
-    );
-
-    final matches =
-        RegExp(RegExp.escape(mentionPattern) + '|' + RegExp.escape(urlPattern))
-            .allMatches(text);
-
-    if (matches.isNotEmpty) {
-      children = [];
-      String remainingText = text;
-      matches.forEach((match) {
-        final String matchText = match.group(0)!;
-        final int start = match.start;
-        final int end = match.end;
-
-        // メンションやURLの前にあるテキストを追加
-        if (start > 0) {
-          children.add(
-            TextSpan(
-              text: remainingText.substring(0, start),
-            ),
-          );
-        }
-
-        // メンションやURLを追加
-        if (RegExp(mentionPattern).hasMatch(matchText)) {
-          // メンションの場合
-          children.add(
-            TextSpan(
-              text: matchText,
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.blue,
-              ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () async {
-                  User _user = await Manager.getUserDetails(
-                      matchText.replaceAll("@", ""));
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProfilePage(user: _user)),
-                  );
-                },
-            ),
-          );
-        } else if (RegExp(urlPattern).hasMatch(matchText)) {
-          // URLの場合
-          children.add(
-            TextSpan(
-              text: matchText,
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.blue,
-              ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  _launchURL(matchText);
-                },
-            ),
-          );
-        }
-
-        // 残りのテキストを更新
-        remainingText = remainingText.substring(end);
-      });
-
-      // 残りのテキストを追加
-      if (remainingText.isNotEmpty) {
-        children.add(
-          TextSpan(
-            text: remainingText,
-          ),
-        );
-      }
-    }
-
-    return RichText(
-      text: TextSpan(
-        children: children,
-      ),
-    );
-  }
-
-  // URLを開く関数
-  Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 }
