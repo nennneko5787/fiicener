@@ -231,6 +231,14 @@ class CircleRichText extends StatelessWidget {
       );
     });
 
+    if (children.isEmpty) {
+      children.add(
+        TextSpan(
+          text: text,
+        ),
+      );
+    }
+
     return RichText(
       text: TextSpan(children: children),
     );
