@@ -257,6 +257,12 @@ class CircleRichText extends StatelessWidget {
         );
       }
     }
+
+    return RichText(
+      text: TextSpan(
+        children: children,
+      ),
+    );
   }
 
   // URLを開く関数
