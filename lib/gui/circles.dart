@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/manager.dart';
 import '../backends/user.dart';
@@ -15,7 +14,6 @@ class CircleMenu extends StatefulWidget {
 
 class _CircleMenuState extends State<CircleMenu> {
   late Future<List<Circle>> _circlesFuture;
-  List<Circle> circles = []; // circles リストを定義
   bool _isLoading = true;
 
   @override
@@ -31,7 +29,7 @@ class _CircleMenuState extends State<CircleMenu> {
 
     try {
       _circlesFuture = Manager.getHomeCircles();
-      circles = await _circlesFuture;
+      await _circlesFuture;
     } catch (e) {
       // Handle errors if needed
     }
@@ -86,34 +84,73 @@ class _CircleMenuState extends State<CircleMenu> {
     );
   }
 
-  Widget _buildActions(int index, Circle circle) {
-    return Row(
-      children: [
-        IconButton(
-          icon: const Icon(Icons.comment),
-          onPressed: () => _onCommentButtonPressed(index),
-        ),
-        Text(circle.getReplysCount().toString()),
-        const SizedBox(width: 16),
-        IconButton(
-          icon: const Icon(Icons.repeat),
-          onPressed: () => _onRetweetButtonPressed(index),
-        ),
-        Text(circle.getReflyUsersCount().toString()),
-        const SizedBox(width: 16),
-        IconButton(
-          icon: const Icon(Icons.favorite),
-          onPressed: () => _onLikeButtonPressed(index),
-        ),
-        Text(circle.getLikedUsersCount().toString()),
-      ],
+  Widget _buildActions(Circle circle) {
+    return FutureBuilder(
+      future: Future.wait([
+        circle.getReplysCount(),
+        circle.getReflyUsersCount(),
+        circle.getLikedUsersCount()
+      ]),
+      builder: (context, AsyncSnapshot<List<int>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Row(
+            children: const [
+              CircularProgressIndicator(),
+            ],
+          );
+        } else if (snapshot.hasError) {
+          return Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.comment),
+                onPressed: () {},
+              ),
+              const Text("Error"),
+              const SizedBox(width: 16),
+              IconButton(
+                icon: const Icon(Icons.repeat),
+                onPressed: () {},
+              ),
+              const Text("Error"),
+              const SizedBox(width: 16),
+              IconButton(
+                icon: const Icon(Icons.favorite),
+                onPressed: () {},
+              ),
+              const Text("Error"),
+            ],
+          );
+        } else {
+          return Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.comment),
+                onPressed: () => _onCommentButtonPressed(circle.id),
+              ),
+              Text(snapshot.data![0].toString()),
+              const SizedBox(width: 16),
+              IconButton(
+                icon: const Icon(Icons.repeat),
+                onPressed: () => _onRetweetButtonPressed(circle.id),
+              ),
+              Text(snapshot.data![1].toString()),
+              const SizedBox(width: 16),
+              IconButton(
+                icon: const Icon(Icons.favorite),
+                onPressed: () => _onLikeButtonPressed(circle.id),
+              ),
+              Text(snapshot.data![2].toString()),
+            ],
+          );
+        }
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return _isLoading
-        ? Center(
+        ? const Center(
             child: CircularProgressIndicator(),
           )
         : RefreshIndicator(
@@ -127,26 +164,32 @@ class _CircleMenuState extends State<CircleMenu> {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
                   );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text('No circles available'),
+                  );
                 } else {
+                  final circles = snapshot.data!;
                   return Scrollbar(
                     child: ListView.builder(
                       itemCount: circles.length,
                       itemBuilder: (context, index) {
+                        final circle = circles[index];
                         return ListTile(
                           title: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
-                                  _buildCircleAvatar(circles[index]),
+                                  _buildCircleAvatar(circle),
                                   const SizedBox(width: 8),
-                                  _buildUserInfo(circles[index]),
+                                  _buildUserInfo(circle),
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              Text(circles[index].content),
-                              _buildActions(index, circles[index]),
-                              Divider(
+                              Text(circle.content),
+                              _buildActions(circle),
+                              const Divider(
                                 color: Colors.grey,
                                 thickness: 1,
                                 height: 2,
