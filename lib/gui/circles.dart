@@ -44,15 +44,15 @@ class _CircleMenuState extends State<CircleMenu> {
     await _loadCircles();
   }
 
-  void _onCommentButtonPressed(int index) {
+  void _onCommentButtonPressed() {
     print("comment pressed");
   }
 
-  void _onLikeButtonPressed(int index) {
+  void _onLikeButtonPressed() {
     print("like pressed");
   }
 
-  void _onRetweetButtonPressed(int index) {
+  void _onRetweetButtonPressed() {
     print("refly pressed");
   }
 
@@ -125,19 +125,19 @@ class _CircleMenuState extends State<CircleMenu> {
             children: [
               IconButton(
                 icon: const Icon(Icons.comment),
-                onPressed: () => _onCommentButtonPressed(circle.id),
+                onPressed: () => _onCommentButtonPressed(),
               ),
               Text(snapshot.data![0].toString()),
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.repeat),
-                onPressed: () => _onRetweetButtonPressed(circle.id),
+                onPressed: () => _onRetweetButtonPressed(),
               ),
               Text(snapshot.data![1].toString()),
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.favorite),
-                onPressed: () => _onLikeButtonPressed(circle.id),
+                onPressed: () => _onLikeButtonPressed(),
               ),
               Text(snapshot.data![2].toString()),
             ],
