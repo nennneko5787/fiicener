@@ -4,6 +4,7 @@ import '../backends/circle.dart'; // Circle クラスを提供するファイル
 import '../backends/manager.dart';
 import '../backends/user.dart';
 import 'profile.dart';
+import 'circle.dart';
 
 class CircleMenu extends StatefulWidget {
   const CircleMenu();
@@ -196,7 +197,12 @@ class _CircleMenuState extends State<CircleMenu> {
                               ),
                             ],
                           ),
-                          onTap: () {},
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CircleDetailPage(circle: circle)),
+                          ),
                         );
                       },
                     ),
