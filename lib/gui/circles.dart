@@ -93,19 +93,19 @@ class _CircleMenuState extends State<CircleMenu> {
           icon: const Icon(Icons.comment),
           onPressed: () => _onCommentButtonPressed(index),
         ),
-        Text(circle.replys.length.toString()),
+        Text(circle.getReplysCount().toString()),
         const SizedBox(width: 16),
         IconButton(
           icon: const Icon(Icons.repeat),
           onPressed: () => _onRetweetButtonPressed(index),
         ),
-        Text(circle.reflyusers.length.toString()),
+        Text(circle.getReflyUsersCount().toString()),
         const SizedBox(width: 16),
         IconButton(
           icon: const Icon(Icons.favorite),
           onPressed: () => _onLikeButtonPressed(index),
         ),
-        Text(circle.likedusers.length.toString()),
+        Text(circle.getLikedUsersCount().toString()),
       ],
     );
   }

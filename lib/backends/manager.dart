@@ -141,6 +141,23 @@ class Manager {
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
+      // クラスリストを取得
+      List<String> classList = circle.classes.toList();
+
+      String circle_id = "";
+
+      // 各クラス名をチェック
+      for (var className in classList) {
+        // 正規表現でマッチ
+        RegExp regExp = RegExp(r'^circle_(.*)$');
+        var match = regExp.firstMatch(className);
+
+        // マッチした場合、(.*) の部分をリストに追加
+        if (match != null) {
+          circle_id = match.group(1)!;
+        }
+      }
+
       // アカウント名
       String? accountName = circle.querySelector('.account-name')?.text.trim();
       if (accountName != null) {
@@ -167,11 +184,9 @@ class Manager {
       print('---');
       */
       circleslist.add(Circle(
+        id: circle_id,
         user: await getUserDetails("${accountName}"),
         content: '${textContent}',
-        replys: [],
-        reflyusers: [],
-        likedusers: [],
         attachment: imageUrl,
       ));
     }
