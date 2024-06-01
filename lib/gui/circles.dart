@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/manager.dart';
-import '../backends/user.dart';
+import '../backends/textagent.dart';
 import 'profile.dart';
 import 'circle.dart';
 
@@ -188,7 +188,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              Text(circle.content),
+                              Text.rich(TextAgent.generate(circle.content)),
                               _buildActions(circle),
                               const Divider(
                                 color: Colors.grey,

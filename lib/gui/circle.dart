@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
+import '../backends/textagent.dart';
 import 'profile.dart';
 
 class CircleDetailPage extends StatelessWidget {
@@ -130,13 +131,7 @@ class CircleDetailPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              circle.content,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            const SizedBox(height: 8),
-            Text(circle.content),
+            Text.rich(TextAgent.generate(circle.content)),
             _buildActions(circle),
             const Divider(
               color: Colors.grey,
