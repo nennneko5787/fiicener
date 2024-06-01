@@ -19,7 +19,7 @@ class TextAgent {
     final _textSpan = TextSpan(
       text: url,
       recognizer: _recognizer,
-      //style: リンク部分のテキストスタイル
+      style: TextStyle(color: Colors.lightBlue),
     );
     return _textSpan;
   }
