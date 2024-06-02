@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:badges/badges.dart' as badges;
 
 class Footer extends StatefulWidget {
   const Footer();
@@ -23,7 +24,10 @@ class _FooterState extends State<Footer> {
           label: '探す',
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.notifications),
+          icon: badges.Badge(
+            badgeContent: Text('3'),
+            child: const Icon(Icons.notifications),
+          ),
           label: '通知',
         ),
       ],
