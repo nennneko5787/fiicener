@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'user.dart';
 import 'circle.dart';
+import 'dart:convert';
 
 class Manager {
   static final storage = FlutterSecureStorage();
@@ -191,6 +192,23 @@ class Manager {
       ));
     }
     return circleslist;
+  }
+
+  static Future<int> getNotificationCount() async {
+    String? session = await loadSessionToken();
+    String? csrf = await loadCsrfToken();
+
+    final res = await http.get(
+      Uri.parse('https://fiicen.jp/notification/count/'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie': 'sessionid=${session}; csrftoken=${csrf};',
+      },
+    );
+
+    Map<String, dynamic> jsonMap = jsonDecode(res.body);
+    return jsonMap["count"];
   }
 
   static Future<bool> initialize() async {

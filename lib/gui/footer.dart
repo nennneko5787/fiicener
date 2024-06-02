@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
+import '../backends/manager.dart';
 
 class Footer extends StatefulWidget {
   const Footer();
@@ -9,12 +10,30 @@ class Footer extends StatefulWidget {
 }
 
 class _FooterState extends State<Footer> {
+  int notificationCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // initStateメソッド内で非同期処理を実行することが推奨されます
+    // バージョンをチェックし、カウントを取得する処理を行います
+    _fetchNotificationCount();
+  }
+
+  // カウントを取得する非同期関数
+  Future<void> _fetchNotificationCount() async {
+    int cnt = await Manager.getNotificationCount();
+    setState(() {
+      notificationCount = cnt;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type:
           BottomNavigationBarType.fixed, // or BottomNavigationBarType.shifting
-      items: const [
+      items: [
         BottomNavigationBarItem(
           icon: const Icon(Icons.home),
           label: 'ホーム', // 'title' is deprecated, use 'label'
@@ -24,10 +43,13 @@ class _FooterState extends State<Footer> {
           label: '探す',
         ),
         BottomNavigationBarItem(
-          icon: badges.Badge(
-            badgeContent: Text('3'),
-            child: const Icon(Icons.notifications),
-          ),
+          icon: notificationCount > 0
+              ? badges.Badge(
+                  // notificationCountが0より大きい場合のみバッジを表示
+                  badgeContent: Text('$notificationCount'),
+                  child: const Icon(Icons.notifications),
+                )
+              : Icon(Icons.notifications),
           label: '通知',
         ),
       ],
