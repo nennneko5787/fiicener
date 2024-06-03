@@ -186,7 +186,7 @@ class Manager {
       }
 
       String? replyed_to = null;
-      String? replyHTML = circle.querySelector('.reply-to').text;
+      String? replyHTML = circle.querySelector('.reply-to')?.innerHTML;
       if (replyHTML != null) {
         // 正規表現でマッチ
         RegExp regExp = RegExp(r'\/field\/(.*?)\/');
