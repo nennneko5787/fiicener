@@ -200,7 +200,7 @@ class Manager {
 
       String? reflew_name = null;
       String? reflewNameHTML =
-          circle.querySelector('.reflew-display-name').innerHTML;
+          circle.querySelector('.reflew-display-name')?.innerHTML;
       if (replyHTML != null) {
         // 正規表現でマッチ
         RegExp regExp = RegExp(r'\/field\/(.*?)\/');
