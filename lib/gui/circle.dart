@@ -132,6 +132,18 @@ class CircleDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text.rich(TextAgent.generate(circle.content)),
+            circle.imageUrl != null
+                ? FittedBox(
+                    child: Image.network('${circle.imageUrl}'),
+                    fit: BoxFit.contain,
+                  )
+                : SizedBox(),
+            circle.videoPoster != null
+                ? FittedBox(
+                    child: Image.network('${circle.videoPoster}'),
+                    fit: BoxFit.contain,
+                  )
+                : SizedBox(),
             _buildActions(circle),
             const Divider(
               color: Colors.grey,

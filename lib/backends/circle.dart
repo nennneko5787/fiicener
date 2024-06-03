@@ -7,13 +7,21 @@ class Circle {
   final String id;
   final User user;
   final String content;
-  final String? attachment;
+  final String? imageUrl;
+  final String? videoPoster;
+  final String? videoUrl;
+  final String? replyed_to;
+  final String? reflew_name;
 
   const Circle({
     required this.id,
     required this.user,
     required this.content,
-    required this.attachment,
+    required this.imageUrl,
+    required this.videoPoster,
+    required this.videoUrl,
+    required this.replyed_to,
+    required this.reflew_name,
   });
 
   Future<List<Circle>> getReplys() async {
@@ -39,6 +47,8 @@ class Circle {
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
+      String replyed_to = this.user.userName;
+
       String circle_id = "";
 
       RegExp regExp = RegExp(r"openSlidePanel\('\/circle\/(\d+)'\)");
@@ -65,6 +75,13 @@ class Circle {
       String? imageUrl =
           circle.querySelector('.attached-image')?.attributes['src'];
 
+      String? videoPoster =
+          circle.querySelector('.attached-video')?.attributes['poster'];
+      String? videoUrl = null;
+      if (videoPoster != null) {
+        videoUrl = '/media/attached_video/${circle_id}.mp4';
+      }
+
       /* サークル情報を出力
       print('ユーザー名: $username');
       print('アカウント名: $accountName');
@@ -78,7 +95,11 @@ class Circle {
         id: circle_id,
         user: await Manager.getUserDetails("${accountName}"),
         content: '${textContent}',
-        attachment: imageUrl,
+        imageUrl: imageUrl,
+        videoPoster: videoPoster,
+        videoUrl: videoUrl,
+        replyed_to: replyed_to,
+        reflew_name: null,
       ));
     }
     return circleslist;

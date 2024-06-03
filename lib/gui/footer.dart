@@ -3,6 +3,8 @@ import 'package:badges/badges.dart' as badges;
 import '../backends/manager.dart';
 
 class Footer extends StatefulWidget {
+  static GlobalKey<_FooterState> footerKey = GlobalKey<_FooterState>();
+
   const Footer();
 
   @override
@@ -17,11 +19,11 @@ class _FooterState extends State<Footer> {
     super.initState();
     // initStateメソッド内で非同期処理を実行することが推奨されます
     // バージョンをチェックし、カウントを取得する処理を行います
-    _fetchNotificationCount();
+    fetchNotificationCount();
   }
 
   // カウントを取得する非同期関数
-  Future<void> _fetchNotificationCount() async {
+  Future<void> fetchNotificationCount() async {
     int cnt = await Manager.getNotificationCount();
     setState(() {
       notificationCount = cnt;

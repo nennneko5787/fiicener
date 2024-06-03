@@ -170,10 +170,47 @@ class Manager {
           .querySelector('.circle-content > div:not(.reply-to)')
           ?.text
           .trim();
+      if (textContent == null) {
+        continue;
+      }
 
       // 添付画像URL (存在する場合)
       String? imageUrl =
           circle.querySelector('.attached-image')?.attributes['src'];
+
+      String? videoPoster =
+          circle.querySelector('.attached-video')?.attributes['poster'];
+      String? videoUrl = null;
+      if (videoPoster != null) {
+        videoUrl = '/media/attached_video/${circle_id}.mp4';
+      }
+
+      String? replyed_to = null;
+      String? replyHTML = circle.querySelector('.reply-to').innerHTML;
+      if (replyHTML != null) {
+        // 正規表現でマッチ
+        RegExp regExp = RegExp(r'\/field\/(.*?)\/');
+        var match = regExp.firstMatch(replyHTML);
+
+        // マッチした場合、(.*) の部分をリストに追加
+        if (match != null) {
+          replyed_to = match.group(1)!;
+        }
+      }
+
+      String? reflew_name = null;
+      String? reflewNameHTML =
+          circle.querySelector('.reflew-display-name').innerHTML;
+      if (replyHTML != null) {
+        // 正規表現でマッチ
+        RegExp regExp = RegExp(r'\/field\/(.*?)\/');
+        var match = regExp.firstMatch(replyHTML);
+
+        // マッチした場合、(.*) の部分をリストに追加
+        if (match != null) {
+          reflew_name = match.group(1)!;
+        }
+      }
 
       /* サークル情報を出力
       print('ユーザー名: $username');
@@ -185,11 +222,14 @@ class Manager {
       print('---');
       */
       circleslist.add(Circle(
-        id: circle_id,
-        user: await getUserDetails("${accountName}"),
-        content: '${textContent}',
-        attachment: imageUrl,
-      ));
+          id: circle_id,
+          user: await getUserDetails("${accountName}"),
+          content: '${textContent}',
+          imageUrl: imageUrl,
+          videoPoster: videoPoster,
+          videoUrl: videoUrl,
+          replyed_to: replyed_to,
+          reflew_name: reflew_name));
     }
     return circleslist;
   }
