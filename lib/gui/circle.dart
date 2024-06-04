@@ -137,14 +137,13 @@ class CircleDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text.rich(TextAgent.generate(circle.content)),
-                  // Other content like image and actions
+                  _buildActions(circle),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                    height: 2,
+                  ),
                 ],
-              ),
-              _buildActions(circle),
-              const Divider(
-                color: Colors.grey,
-                thickness: 1,
-                height: 2,
               ),
             ),
             FutureBuilder<List<Circle>>(
