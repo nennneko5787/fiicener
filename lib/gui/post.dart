@@ -193,7 +193,7 @@ class _PostMenu extends State<PostMenu> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _pickVideo,
-                  child: Text('動画'),
+                  child: Text('動画を添付'),
                 ),
                 const SizedBox(height: 20),
                 _selectedVideo == null

@@ -160,48 +160,47 @@ class CircleDetailPage extends StatelessWidget {
               future: circle.getReplys(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return ListView(); // Empty ListView to show refresh indicator
+                  return const Text(
+                      'Loading...'); // Empty ListView to show refresh indicator
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const SizedBox();
                 } else {
                   final circles = snapshot.data!;
-                  return Scrollbar(
-                    child: ListView.builder(
-                      itemCount: circles.length,
-                      itemBuilder: (context, index) {
-                        final c = circles[index];
-                        return ListTile(
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  _buildCircleAvatar(context, c),
-                                  const SizedBox(width: 8),
-                                  _buildUserInfo(c),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text.rich(TextAgent.generate(circle.content)),
-                              _buildActions(c),
-                              const Divider(
-                                color: Colors.grey,
-                                thickness: 1,
-                                height: 2,
-                              ),
-                            ],
-                          ),
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    CircleDetailPage(circle: c)),
-                          ),
-                        );
-                      },
-                    ),
+                  return ListView.builder(
+                    itemCount: circles.length,
+                    itemBuilder: (context, index) {
+                      final c = circles[index];
+                      return ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                _buildCircleAvatar(context, c),
+                                const SizedBox(width: 8),
+                                _buildUserInfo(c),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text.rich(TextAgent.generate(circle.content)),
+                            _buildActions(c),
+                            const Divider(
+                              color: Colors.grey,
+                              thickness: 1,
+                              height: 2,
+                            ),
+                          ],
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CircleDetailPage(circle: c)),
+                        ),
+                      );
+                    },
                   );
                 }
               },
