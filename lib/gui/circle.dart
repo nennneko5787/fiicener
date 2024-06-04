@@ -140,7 +140,7 @@ class CircleDetailPage extends StatelessWidget {
                   // Other content like image and actions
                 ],
               ),
-              _buildActions(),
+              _buildActions(circle),
               const Divider(
                 color: Colors.grey,
                 thickness: 1,
