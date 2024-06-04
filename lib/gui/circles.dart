@@ -18,7 +18,6 @@ class CircleMenu extends StatefulWidget {
 class _CircleMenuState extends State<CircleMenu> {
   late Future<List<Circle>> _circlesFuture;
   int _currentPage = 1; // 現在のページ番号
-  bool _loadingMore = false;
 
   @override
   void initState() {
@@ -37,24 +36,15 @@ class _CircleMenuState extends State<CircleMenu> {
   }
 
   Future<void> _loadMoreCircles() async {
-    if (!_loadingMore) {
+    try {
+      _currentPage++; // 次のページ番号を更新
+      final circles = await Manager.getHomeCircles(page: _currentPage);
       setState(() {
-        _loadingMore = true;
+        _circlesFuture = _circlesFuture
+            .then((existingCircles) => [...existingCircles, ...circles]);
       });
-      try {
-        _currentPage++; // 次のページ番号を更新
-        final circles = await Manager.getHomeCircles(page: _currentPage);
-        setState(() {
-          _circlesFuture = _circlesFuture
-              .then((existingCircles) => [...existingCircles, ...circles]);
-        });
-      } catch (e) {
-        // エラー処理
-      } finally {
-        setState(() {
-          _loadingMore = false;
-        });
-      }
+    } catch (e) {
+      // エラー処理
     }
   }
 
@@ -176,15 +166,13 @@ class _CircleMenuState extends State<CircleMenu> {
           if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
             _loadMoreCircles();
           }
-          return true;
+          return false;
         },
         child: FutureBuilder<List<Circle>>(
           future: _circlesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(), // グルグル表示
-              );
+              return ListView(); // Empty ListView to show refresh indicator
             } else if (snapshot.hasError) {
               return Center(
                 child: Text('Error: ${snapshot.error}'),
@@ -197,9 +185,8 @@ class _CircleMenuState extends State<CircleMenu> {
               final circles = snapshot.data!;
               return Scrollbar(
                 child: ListView.builder(
-                  itemCount: circles.length * 2, // 2倍にしてフッターアイテムを追加
+                  itemCount: circles.length,
                   itemBuilder: (context, index) {
-                    // 奇数の場合はリストアイテムを返す
                     final circle = circles[index];
                     return ListTile(
                       title: Column(
@@ -215,7 +202,6 @@ class _CircleMenuState extends State<CircleMenu> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Row(children: [
-                                            const Icon(Icons.repeat),
                                             GestureDetector(
                                               onTap: () async {
                                                 User _user = await Manager
@@ -238,6 +224,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                               ' がリポストしました',
                                             ),
                                           ]),
+                                          const Icon(Icons.repeat),
                                         ],
                                       ),
                                     ),
