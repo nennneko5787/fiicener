@@ -200,8 +200,7 @@ class _CircleMenuState extends State<CircleMenu> {
                   itemCount: circles.length * 2, // 2倍にしてフッターアイテムを追加
                   itemBuilder: (context, index) {
                     // 奇数の場合はリストアイテムを返す
-                    final realIndex = index ~/ 2;
-                    final circle = circles[realIndex];
+                    final circle = circles[index];
                     return ListTile(
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
