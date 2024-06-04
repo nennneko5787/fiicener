@@ -176,7 +176,7 @@ class _CircleMenuState extends State<CircleMenu> {
           if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
             _loadMoreCircles();
           }
-          return false;
+          return true;
         },
         child: FutureBuilder<List<Circle>>(
           future: _circlesFuture,
