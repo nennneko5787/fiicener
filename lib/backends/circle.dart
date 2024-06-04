@@ -43,7 +43,11 @@ class Circle {
     var document = htmlParser.parse(response.body);
 
     // サークル要素をすべて取得する
-    List circles = document.querySelectorAll('.circle');
+    var replys = document.querySelector('.replys');
+    List circles = [];
+    if (replys != null) {
+      circles = replys.querySelectorAll('.circles');
+    }
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
@@ -52,7 +56,7 @@ class Circle {
       String circle_id = "";
 
       RegExp regExp = RegExp(r"openSlidePanel\('\/circle\/(\d+)'\)");
-      var match = regExp.firstMatch(circle.innerHTML);
+      var match = regExp.firstMatch(circle?.innerHTML);
 
       // マッチした場合、(.*) の部分をリストに追加
       if (match != null) {
