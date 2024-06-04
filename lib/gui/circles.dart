@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/manager.dart';
 import '../backends/textagent.dart';
+import '../backends/user.dart';
 import 'profile.dart';
 import 'circle.dart';
 import 'footer.dart';
@@ -27,6 +28,7 @@ class _CircleMenuState extends State<CircleMenu> {
     try {
       _circlesFuture = Manager.getHomeCircles();
       await _circlesFuture;
+      setState(() {});
     } catch (e) {
       // Handle errors if needed
     }
@@ -178,9 +180,29 @@ class _CircleMenuState extends State<CircleMenu> {
                                       mainAxisAlignment: MainAxisAlignment
                                           .center, // Aligns children in the center horizontally
                                       children: [
-                                        Text(
-                                          '${circle.reflew_name} がリポストしました',
-                                        ),
+                                        Row(children: [
+                                          GestureDetector(
+                                            onTap: () async {
+                                              User _user =
+                                                  await Manager.getUserDetails(
+                                                      '${circle.reflew_name}');
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProfilePage(
+                                                            user: _user)),
+                                              );
+                                            },
+                                            child: Text(
+                                                '@${circle.reflew_name}',
+                                                style: TextStyle(
+                                                    color: Colors.lightBlue)),
+                                          ),
+                                          Text(
+                                            ' がリポストしました',
+                                          ),
+                                        ]),
                                         const Icon(Icons.repeat),
                                       ],
                                     ),
@@ -203,7 +225,24 @@ class _CircleMenuState extends State<CircleMenu> {
                         ),
                         const SizedBox(height: 8),
                         circle.reflew_name != null
-                            ? Text('返信先: @${circle.replyed_to}')
+                            ? Row(children: [
+                                const Text('返信先: '),
+                                GestureDetector(
+                                  onTap: () async {
+                                    User _user = await Manager.getUserDetails(
+                                        '${circle.reflew_name}');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ProfilePage(user: _user)),
+                                    );
+                                  },
+                                  child: Text('@${circle.reflew_name}',
+                                      style:
+                                          TextStyle(color: Colors.lightBlue)),
+                                ),
+                              ])
                             : SizedBox(),
                         Text.rich(TextAgent.generate(circle.content)),
                         circle.imageUrl != null
