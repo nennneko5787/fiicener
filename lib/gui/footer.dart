@@ -49,6 +49,9 @@ class _FooterState extends State<Footer> {
               ? badges.Badge(
                   // notificationCountが0より大きい場合のみバッジを表示
                   badgeContent: Text('$notificationCount'),
+                  badgeStyle: badges.BadgeStyle(
+                    badgeColor: Colors.blue,
+                  ),
                   child: const Icon(Icons.notifications),
                 )
               : Icon(Icons.notifications),

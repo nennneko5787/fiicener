@@ -56,7 +56,7 @@ class Circle {
       String circle_id = "";
 
       RegExp regExp = RegExp(r"openSlidePanel\('\/circle\/(\d+)'\)");
-      var match = regExp.firstMatch(circle?.innerHTML);
+      var match = regExp.firstMatch(circle?.innerHtml);
 
       // マッチした場合、(.*) の部分をリストに追加
       if (match != null) {

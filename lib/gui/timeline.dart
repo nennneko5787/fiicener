@@ -16,6 +16,11 @@ class _MyHomePageState extends State<MyHomePage> {
   StatefulWidget body = CircleMenu();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarMenu(),
