@@ -137,83 +137,83 @@ class _PostMenu extends State<PostMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('サークルをポスト'),
-          actions: [
-            ValueListenableBuilder<bool>(
-              valueListenable: _isPostButtonEnabled,
-              builder: (context, isEnabled, child) {
-                return ElevatedButton(
-                  onPressed: isEnabled ? _postPost : null,
-                  child: Text(
-                    'Post',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isEnabled ? Colors.blue : Colors.grey,
-                  ),
-                );
-              },
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        title: const Text('サークルをポスト'),
+        actions: [
+          ValueListenableBuilder<bool>(
+            valueListenable: _isPostButtonEnabled,
+            builder: (context, isEnabled, child) {
+              return ElevatedButton(
+                onPressed: isEnabled ? _postPost : null,
+                child: Text(
+                  'Post',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isEnabled ? Colors.blue : Colors.grey,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _postController,
+              maxLines: null,
+              decoration: const InputDecoration(
+                hintText: '今、何が起きてる？',
+                border: InputBorder.none,
+              ),
             ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _pickImage,
+              child: Text('画像を選択'),
+            ),
+            const SizedBox(height: 20),
+            _selectedImage == null
+                ? SizedBox()
+                : Column(
+                    children: [
+                      Image.file(_selectedImage!),
+                      TextButton(
+                        onPressed: _clearImage,
+                        child: Text(
+                          '画像を解除',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _pickVideo,
+              child: Text('動画を添付'),
+            ),
+            const SizedBox(height: 20),
+            _selectedVideo == null
+                ? SizedBox()
+                : Column(
+                    children: [
+                      Text('${_selectedVideo?.path}'),
+                      TextButton(
+                        onPressed: _clearVideo,
+                        child: Text(
+                          '動画を解除',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
           ],
         ),
-        body: Scrollbar(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _postController,
-                  maxLines: null,
-                  decoration: const InputDecoration(
-                    hintText: '今、何が起きてる？',
-                    border: InputBorder.none,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _pickImage,
-                  child: Text('画像を選択'),
-                ),
-                const SizedBox(height: 20),
-                _selectedImage == null
-                    ? SizedBox()
-                    : Column(
-                        children: [
-                          Image.file(_selectedImage!),
-                          TextButton(
-                            onPressed: _clearImage,
-                            child: Text(
-                              '画像を解除',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _pickVideo,
-                  child: Text('動画を添付'),
-                ),
-                const SizedBox(height: 20),
-                _selectedVideo == null
-                    ? SizedBox()
-                    : Column(
-                        children: [
-                          Text('${_selectedVideo?.path}'),
-                          TextButton(
-                            onPressed: _clearVideo,
-                            child: Text(
-                              '動画を解除',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-              ],
-            ),
-          ),
-        ));
+      ),
+    );
   }
 }
 

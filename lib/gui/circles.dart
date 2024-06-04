@@ -18,6 +18,7 @@ class CircleMenu extends StatefulWidget {
 class _CircleMenuState extends State<CircleMenu> {
   late Future<List<Circle>> _circlesFuture;
   int _currentPage = 1; // 現在のページ番号
+  bool _loadingMore = false;
 
   @override
   void initState() {
@@ -36,15 +37,24 @@ class _CircleMenuState extends State<CircleMenu> {
   }
 
   Future<void> _loadMoreCircles() async {
-    try {
-      _currentPage++; // 次のページ番号を更新
-      final circles = await Manager.getHomeCircles(page: _currentPage);
+    if (!_loadingMore) {
       setState(() {
-        _circlesFuture = _circlesFuture
-            .then((existingCircles) => [...existingCircles, ...circles]);
+        _loadingMore = true;
       });
-    } catch (e) {
-      // エラー処理
+      try {
+        _currentPage++; // 次のページ番号を更新
+        final circles = await Manager.getHomeCircles(page: _currentPage);
+        setState(() {
+          _circlesFuture = _circlesFuture
+              .then((existingCircles) => [...existingCircles, ...circles]);
+        });
+      } catch (e) {
+        // エラー処理
+      } finally {
+        setState(() {
+          _loadingMore = false;
+        });
+      }
     }
   }
 
@@ -301,14 +311,17 @@ class _CircleMenuState extends State<CircleMenu> {
                                   CircleDetailPage(circle: circle)),
                         ),
                       );
-                    } else {
-                      // 偶数の場合はグルグルアイテムを返す
+                    } else if (_loadingMore &&
+                        index == circles.length * 2 - 1) {
+                      // 偶数の場合かつ読み込み中の場合はグルグルアイテムを返す
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: CircularProgressIndicator(), // グルグル表示
                         ),
                       );
+                    } else {
+                      return SizedBox();
                     }
                   },
                 ),
