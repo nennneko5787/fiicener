@@ -137,7 +137,6 @@ class _PostMenu extends State<PostMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('サークルをポスト'),
         actions: [
@@ -158,59 +157,61 @@ class _PostMenu extends State<PostMenu> {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _postController,
-              maxLines: null,
-              decoration: const InputDecoration(
-                hintText: '今、何が起きてる？',
-                border: InputBorder.none,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _postController,
+                maxLines: null,
+                decoration: const InputDecoration(
+                  hintText: '今、何が起きてる？',
+                  border: InputBorder.none,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('画像を選択'),
-            ),
-            const SizedBox(height: 20),
-            _selectedImage == null
-                ? SizedBox()
-                : Column(
-                    children: [
-                      Image.file(_selectedImage!),
-                      TextButton(
-                        onPressed: _clearImage,
-                        child: Text(
-                          '画像を解除',
-                          style: TextStyle(color: Colors.red),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text('画像を選択'),
+              ),
+              const SizedBox(height: 20),
+              _selectedImage == null
+                  ? SizedBox()
+                  : Column(
+                      children: [
+                        Image.file(_selectedImage!),
+                        TextButton(
+                          onPressed: _clearImage,
+                          child: Text(
+                            '画像を解除',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _pickVideo,
-              child: Text('動画を添付'),
-            ),
-            const SizedBox(height: 20),
-            _selectedVideo == null
-                ? SizedBox()
-                : Column(
-                    children: [
-                      Text('${_selectedVideo?.path}'),
-                      TextButton(
-                        onPressed: _clearVideo,
-                        child: Text(
-                          '動画を解除',
-                          style: TextStyle(color: Colors.red),
+                      ],
+                    ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _pickVideo,
+                child: Text('動画を添付'),
+              ),
+              const SizedBox(height: 20),
+              _selectedVideo == null
+                  ? SizedBox()
+                  : Column(
+                      children: [
+                        Text('${_selectedVideo?.path}'),
+                        TextButton(
+                          onPressed: _clearVideo,
+                          child: Text(
+                            '動画を解除',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-          ],
+                      ],
+                    ),
+            ],
+          ),
         ),
       ),
     );
