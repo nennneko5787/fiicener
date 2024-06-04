@@ -115,100 +115,98 @@ class CircleDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('サークル'),
-        centerTitle: true,
-      ),
-      body: Row(children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        appBar: AppBar(
+          title: Text('サークル'),
+          centerTitle: true,
+        ),
+        body: Scrollbar(
+          child: Row(children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildCircleAvatar(context, circle),
-                  const SizedBox(width: 8),
-                  _buildUserInfo(circle),
+                  Row(
+                    children: [
+                      _buildCircleAvatar(context, circle),
+                      const SizedBox(width: 8),
+                      _buildUserInfo(circle),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text.rich(TextAgent.generate(circle.content)),
+                  circle.imageUrl != null
+                      ? FittedBox(
+                          child: Image.network('${circle.imageUrl}'),
+                          fit: BoxFit.contain,
+                        )
+                      : SizedBox(),
+                  circle.videoPoster != null
+                      ? FittedBox(
+                          child: Image.network('${circle.videoPoster}'),
+                          fit: BoxFit.contain,
+                        )
+                      : SizedBox(),
+                  _buildActions(circle),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                    height: 2,
+                  ),
                 ],
               ),
-              const SizedBox(height: 8),
-              Text.rich(TextAgent.generate(circle.content)),
-              circle.imageUrl != null
-                  ? FittedBox(
-                      child: Image.network('${circle.imageUrl}'),
-                      fit: BoxFit.contain,
-                    )
-                  : SizedBox(),
-              circle.videoPoster != null
-                  ? FittedBox(
-                      child: Image.network('${circle.videoPoster}'),
-                      fit: BoxFit.contain,
-                    )
-                  : SizedBox(),
-              _buildActions(circle),
-              const Divider(
-                color: Colors.grey,
-                thickness: 1,
-                height: 2,
-              ),
-            ],
-          ),
-        ),
-        FutureBuilder<List<Circle>>(
-          future: circle.getReplys(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return ListView(); // Empty ListView to show refresh indicator
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(
-                child: Text('No circles available'),
-              );
-            } else {
-              final circles = snapshot.data!;
-              return Scrollbar(
-                child: ListView.builder(
-                  itemCount: circles.length,
-                  itemBuilder: (context, index) {
-                    final c = circles[index];
-                    return ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+            ),
+            FutureBuilder<List<Circle>>(
+              future: circle.getReplys(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return ListView(); // Empty ListView to show refresh indicator
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const SizedBox();
+                } else {
+                  final circles = snapshot.data!;
+                  return Scrollbar(
+                    child: ListView.builder(
+                      itemCount: circles.length,
+                      itemBuilder: (context, index) {
+                        final c = circles[index];
+                        return ListTile(
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildCircleAvatar(context, c),
-                              const SizedBox(width: 8),
-                              _buildUserInfo(c),
+                              Row(
+                                children: [
+                                  _buildCircleAvatar(context, c),
+                                  const SizedBox(width: 8),
+                                  _buildUserInfo(c),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text.rich(TextAgent.generate(circle.content)),
+                              _buildActions(c),
+                              const Divider(
+                                color: Colors.grey,
+                                thickness: 1,
+                                height: 2,
+                              ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Text.rich(TextAgent.generate(circle.content)),
-                          _buildActions(c),
-                          const Divider(
-                            color: Colors.grey,
-                            thickness: 1,
-                            height: 2,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CircleDetailPage(circle: c)),
                           ),
-                        ],
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CircleDetailPage(circle: c)),
-                      ),
-                    );
-                  },
-                ),
-              );
-            }
-          },
-        ),
-      ]),
-    );
+                        );
+                      },
+                    ),
+                  );
+                }
+              },
+            ),
+          ]),
+        ));
   }
 }
