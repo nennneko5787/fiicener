@@ -55,15 +55,15 @@ class _CircleMenuState extends State<CircleMenu> {
   }
 
   void _onCommentButtonPressed() {
-    print("comment pressed");
+    print("comment pressed!");
   }
 
   void _onLikeButtonPressed() {
-    print("like pressed");
+    print("like pressed!");
   }
 
   void _onRetweetButtonPressed() {
-    print("refly pressed");
+    print("refly pressed!");
   }
 
   Widget _buildCircleAvatar(Circle circle) {

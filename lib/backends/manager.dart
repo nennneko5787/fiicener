@@ -175,14 +175,16 @@ class Manager {
       }
 
       // 添付画像URL (存在する場合)
-      String? imageUrl =
+      String? imageUrlRaw =
           circle.querySelector('.attached-image')?.attributes['src'];
+
+      String imageUrl = 'https://fiicen.jp${imageUrlRaw}';
 
       String? videoPoster =
           circle.querySelector('.attached-video')?.attributes['poster'];
       String? videoUrl = null;
       if (videoPoster != null) {
-        videoUrl = '/media/attached_video/${circle_id}.mp4';
+        videoUrl = 'https://fiicen.jp/media/attached_video/${circle_id}.mp4';
       }
 
       String? replyed_to = null;
@@ -201,10 +203,10 @@ class Manager {
       String? reflew_name = null;
       String? reflewNameHTML =
           circle.querySelector('.reflew-display-name')?.innerHtml;
-      if (replyHTML != null) {
+      if (reflewNameHTML != null) {
         // 正規表現でマッチ
         RegExp regExp = RegExp(r'\/field\/(.*?)\/');
-        var match = regExp.firstMatch(replyHTML);
+        var match = regExp.firstMatch(reflewNameHTML);
 
         // マッチした場合、(.*) の部分をリストに追加
         if (match != null) {
