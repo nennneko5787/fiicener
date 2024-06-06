@@ -214,7 +214,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              Text.rich(TextAgent.generate(c.content)),
+                              Text.rich(TextAgent.generate(c.content), context),
                               _buildActions(c),
                               const Divider(
                                 color: Colors.grey,
