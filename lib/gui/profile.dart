@@ -46,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: const TextStyle(color: Colors.grey, fontSize: 16),
         ),
         const SizedBox(height: 10),
-        Text.rich(TextAgent.generate(user.bio)),
+        Text.rich(TextAgent.generate(user.bio), context),
       ],
     );
   }
