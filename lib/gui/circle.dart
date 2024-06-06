@@ -154,7 +154,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text.rich(TextAgent.generate(widget.circle.content)),
+                  Text.rich(TextAgent.generate(widget.circle.content), context),
                   widget.circle.imageUrl != null
                       ? GestureDetector(
                           onTap: () {
