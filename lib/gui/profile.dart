@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../backends/user.dart';
+import '../backends/textagent.dart';
 import 'followers.dart';
 import 'following.dart';
 
@@ -45,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: const TextStyle(color: Colors.grey, fontSize: 16),
         ),
         const SizedBox(height: 10),
-        Text(user.bio),
+        Text.rich(TextAgent.generate(user.bio)),
       ],
     );
   }

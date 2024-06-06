@@ -5,11 +5,16 @@ import '../backends/textagent.dart';
 import '../backends/circle_gui_helper.dart';
 import 'profile.dart';
 
-class CircleDetailPage extends StatelessWidget {
+class CircleDetailPage extends StatefulWidget {
   final Circle circle;
 
   const CircleDetailPage({Key? key, required this.circle}) : super(key: key);
 
+  @override
+  _CircleDetailPageState createState() => _CircleDetailPageState();
+}
+
+class _CircleDetailPageState extends State<CircleDetailPage> {
   void _onCommentButtonPressed() {
     print("comment pressed");
   }
@@ -90,20 +95,32 @@ class CircleDetailPage extends StatelessWidget {
           return Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.comment),
-                onPressed: () => _onCommentButtonPressed(),
+                icon: const Icon(Icons.comment_outlined),
+                onPressed: () {},
               ),
               Text(snapshot.data![0].toString()),
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.repeat),
-                onPressed: () => _onRetweetButtonPressed(),
+                color: circle.reflown ? Colors.green : Colors.grey,
+                onPressed: () async {
+                  bool reflown = await circle.refly();
+                  if (reflown) {
+                    setState(() {});
+                  }
+                },
               ),
               Text(snapshot.data![1].toString()),
               const SizedBox(width: 16),
               IconButton(
-                icon: const Icon(Icons.favorite),
-                onPressed: () => _onLikeButtonPressed(),
+                color: circle.liked ? Colors.pink : Colors.grey,
+                icon: circle.liked ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
+                onPressed: () async {
+                  bool liked = await circle.like();
+                  if (liked) {
+                    setState(() {});
+                  }
+                },
               ),
               Text(snapshot.data![2].toString()),
             ],
@@ -131,31 +148,31 @@ class CircleDetailPage extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      _buildCircleAvatar(context, circle),
+                      _buildCircleAvatar(context, widget.circle),
                       const SizedBox(width: 8),
-                      _buildUserInfo(circle),
+                      _buildUserInfo(widget.circle),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text.rich(TextAgent.generate(circle.content)),
-                  circle.imageUrl != null
+                  Text.rich(TextAgent.generate(widget.circle.content)),
+                  widget.circle.imageUrl != null
                       ? GestureDetector(
                           onTap: () {
-                            CircleGuiHelper.showPreviewImage(context, image: circle.imageUrl);
+                            CircleGuiHelper.showPreviewImage(context, image: widget.circle.imageUrl);
                           },
                           child: FittedBox(
-                            child: Image.network('${circle.imageUrl}'),
+                            child: Image.network('${widget.circle.imageUrl}'),
                             fit: BoxFit.contain,
                           )
                       )
                       : SizedBox(),
-                  circle.videoPoster != null
+                  widget.circle.videoPoster != null
                       ? FittedBox(
-                          child: Image.network('${circle.videoPoster}'),
+                          child: Image.network('${widget.circle.videoPoster}'),
                           fit: BoxFit.contain,
                         )
                       : SizedBox(),
-                  _buildActions(circle),
+                  _buildActions(widget.circle),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1,
@@ -165,7 +182,7 @@ class CircleDetailPage extends StatelessWidget {
               ),
             ),
             FutureBuilder<List<Circle>>(
-              future: circle.getReplys(),
+              future: widget.circle.getReplys(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
@@ -182,6 +199,8 @@ class CircleDetailPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final c = circles[index];
                       return ListTile(
+                        contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                        minVerticalPadding: 8.0 * 0.2,
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -194,7 +213,12 @@ class CircleDetailPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text.rich(TextAgent.generate(c.content)),
-                            // Other content like actions
+                            _buildActions(c),
+                            const Divider(
+                              color: Colors.grey,
+                              thickness: 1,
+                              height: 2,
+                            ),
                           ],
                         ),
                         onTap: () => Navigator.push(

@@ -12,8 +12,10 @@ class Circle {
   final String? videoUrl;
   final String? replyed_to;
   final String? reflew_name;
+  bool liked = false;
+  bool reflown = false;
 
-  const Circle({
+  Circle({
     required this.id,
     required this.user,
     required this.content,
@@ -22,6 +24,8 @@ class Circle {
     required this.videoUrl,
     required this.replyed_to,
     required this.reflew_name,
+    required this.liked,
+    required this.reflown,
   });
 
   Future<List<Circle>> getReplys() async {
@@ -29,7 +33,7 @@ class Circle {
     String? csrf = await Manager.loadCsrfToken();
 
     final response = await http.get(
-      Uri.parse('https://fiicen.jp/circle/${this.id}/'),
+      Uri.parse('https://fiicen.jp/circle/${id}/'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -51,7 +55,7 @@ class Circle {
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
-      String replyed_to = this.user.userName;
+      String replyed_to = user.userName;
 
       String circle_id = "";
 
@@ -75,6 +79,15 @@ class Circle {
           ?.text
           .trim();
 
+      bool liked = false;
+      if (circle.innerHtml.contains("/static/icon/liked.svg")) {
+        liked = true;
+      }
+      bool reflown = false;
+      if (circle.innerHtml.contains("reflown")) {
+        reflown = true;
+      }
+
       /* サークル情報を出力
       print('ユーザー名: $username');
       print('アカウント名: $accountName');
@@ -93,6 +106,8 @@ class Circle {
         videoUrl: null,
         replyed_to: replyed_to,
         reflew_name: null,
+        liked: liked,
+        reflown: reflown,
       ));
     }
     return circleslist;
@@ -103,7 +118,7 @@ class Circle {
     String? csrf = await Manager.loadCsrfToken();
 
     final response = await http.get(
-      Uri.parse('https://fiicen.jp/circle/${this.id}/'),
+      Uri.parse('https://fiicen.jp/circle/${id}/'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -120,7 +135,7 @@ class Circle {
 
   Future<List<User>> getReflyUsers() async {
     final reflys_res = await http.get(
-      Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=${this.id}'),
+      Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=${id}'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -155,7 +170,7 @@ class Circle {
 
   Future<int> getReflyUsersCount() async {
     final reflys_res = await http.get(
-      Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=${this.id}'),
+      Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=${id}'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -173,7 +188,7 @@ class Circle {
 
   Future<List<User>> getLikedUsers() async {
     final likes_res = await http.get(
-      Uri.parse('https://fiicen.jp/circle/likes/?circle_id=${this.id}'),
+      Uri.parse('https://fiicen.jp/circle/likes/?circle_id=${id}'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -208,7 +223,7 @@ class Circle {
 
   Future<int> getLikedUsersCount() async {
     final likes_res = await http.get(
-      Uri.parse('https://fiicen.jp/circle/likes/?circle_id=${this.id}'),
+      Uri.parse('https://fiicen.jp/circle/likes/?circle_id=${id}'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -222,5 +237,45 @@ class Circle {
     // 正規表現で全てのマッチを見つける
     Iterable<Match> matches = regExp.allMatches(likes_res.body);
     return matches.length;
+  }
+
+  Future<bool> refly() async {
+    final response = await http.post(
+      Uri.parse('https://fiicen.jp/circle/refly/'),
+      body: {"circle_id": id},
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
+        'Cookie':
+            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
+      },
+    );
+    if (response.statusCode == 200) {
+      this.reflown = !this.reflown;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> like() async {
+    final response = await http.post(
+      Uri.parse('https://fiicen.jp/circle/refly/'),
+      body: {"circle_id": id},
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
+        'Cookie':
+            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
+      },
+    );
+    if (response.statusCode == 200) {
+      this.liked = !this.liked;
+      return true;
+    } else {
+      return false;
+    }
   }
 }

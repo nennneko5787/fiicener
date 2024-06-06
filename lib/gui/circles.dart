@@ -56,18 +56,6 @@ class _CircleMenuState extends State<CircleMenu> {
     await Footer.footerKey.currentState?.fetchNotificationCount();
   }
 
-  void _onCommentButtonPressed() {
-    print("comment pressed");
-  }
-
-  void _onLikeButtonPressed() {
-    print("like pressed");
-  }
-
-  void _onRetweetButtonPressed() {
-    print("refly pressed");
-  }
-
   Widget _buildCircleAvatar(Circle circle) {
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -114,7 +102,7 @@ class _CircleMenuState extends State<CircleMenu> {
           return Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.comment),
+                icon: const Icon(Icons.comment_outlined),
                 onPressed: () {},
               ),
               const Text("Error"),
@@ -126,7 +114,7 @@ class _CircleMenuState extends State<CircleMenu> {
               const Text("Error"),
               const SizedBox(width: 16),
               IconButton(
-                icon: const Icon(Icons.favorite),
+                icon: const Icon(Icons.favorite_outline),
                 onPressed: () {},
               ),
               const Text("Error"),
@@ -136,20 +124,32 @@ class _CircleMenuState extends State<CircleMenu> {
           return Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.comment),
-                onPressed: () => _onCommentButtonPressed(),
+                icon: const Icon(Icons.comment_outlined),
+                onPressed: () {},
               ),
               Text(snapshot.data![0].toString()),
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.repeat),
-                onPressed: () => _onRetweetButtonPressed(),
+                color: circle.reflown ? Colors.green : Colors.grey,
+                onPressed: () async {
+                  bool reflown = await circle.refly();
+                  if (reflown) {
+                    setState(() {});
+                  }
+                },
               ),
               Text(snapshot.data![1].toString()),
               const SizedBox(width: 16),
               IconButton(
-                icon: const Icon(Icons.favorite),
-                onPressed: () => _onLikeButtonPressed(),
+                color: circle.liked ? Colors.pink : Colors.grey,
+                icon: circle.liked ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
+                onPressed: () async {
+                  bool liked = await circle.like();
+                  if (liked) {
+                    setState(() {});
+                  }
+                },
               ),
               Text(snapshot.data![2].toString()),
             ],

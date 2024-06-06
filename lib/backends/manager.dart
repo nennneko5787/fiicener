@@ -1,4 +1,5 @@
 import 'package:html/parser.dart' as htmlParser;
+import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'user.dart';
@@ -138,10 +139,10 @@ class Manager {
     var document = htmlParser.parse(response.body);
 
     // サークル要素をすべて取得する
-    List circles = document.querySelectorAll('.circle');
+    List<dom.Element> circles = document.querySelectorAll('.circle');
 
     // 各サークルの情報を抽出する
-    for (var circle in circles) {
+    for (dom.Element circle in circles) {
       // クラスリストを取得
       List<String> classList = circle.classes.toList();
 
@@ -214,6 +215,15 @@ class Manager {
         }
       }
 
+      bool liked = false;
+      if (circle.innerHtml.contains("/static/icon/liked.svg")) {
+        liked = true;
+      }
+      bool reflown = false;
+      if (circle.innerHtml.contains("reflown")) {
+        reflown = true;
+      }
+
       /* サークル情報を出力
       print('ユーザー名: $username');
       print('アカウント名: $accountName');
@@ -231,7 +241,10 @@ class Manager {
           videoPoster: videoPoster,
           videoUrl: videoUrl,
           replyed_to: replyed_to,
-          reflew_name: reflew_name));
+          reflew_name: reflew_name,
+          liked: liked,
+          reflown: reflown
+        ));
     }
     return circleslist;
   }
