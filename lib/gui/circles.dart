@@ -267,7 +267,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                   ),
                                 ])
                               : SizedBox(),
-                          Text.rich(TextAgent.generate(circle.content)),
+                          Text.rich(TextAgent.generate(circle.content), context),
                           circle.imageUrl != null
                               ? GestureDetector(
                                   onTap: () {
