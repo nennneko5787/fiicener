@@ -4,6 +4,7 @@ import '../backends/circle.dart';
 import '../backends/manager.dart';
 import '../backends/textagent.dart';
 import '../backends/user.dart';
+import '../backends/circle_gui_helper.dart';
 import 'profile.dart';
 import 'circle.dart';
 import 'footer.dart';
@@ -50,20 +51,21 @@ class _CircleMenuState extends State<CircleMenu> {
 
   Future<void> _refresh() async {
     HapticFeedback.mediumImpact();
-    await _loadCircles(1);
+    _currentPage = 1;
+    await _loadCircles(_currentPage);
     await Footer.footerKey.currentState?.fetchNotificationCount();
   }
 
   void _onCommentButtonPressed() {
-    print("comment pressed!");
+    print("comment pressed");
   }
 
   void _onLikeButtonPressed() {
-    print("like pressed!");
+    print("like pressed");
   }
 
   void _onRetweetButtonPressed() {
-    print("refly pressed!");
+    print("refly pressed");
   }
 
   Widget _buildCircleAvatar(Circle circle) {
@@ -172,7 +174,9 @@ class _CircleMenuState extends State<CircleMenu> {
           future: _circlesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return ListView(); // Empty ListView to show refresh indicator
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
             } else if (snapshot.hasError) {
               return Center(
                 child: Text('Error: ${snapshot.error}'),
@@ -183,8 +187,7 @@ class _CircleMenuState extends State<CircleMenu> {
               );
             } else {
               final circles = snapshot.data!;
-              return Scrollbar(
-                child: ListView.builder(
+              return ListView.builder(
                   itemCount: circles.length,
                   itemBuilder: (context, index) {
                     final circle = circles[index];
@@ -266,10 +269,15 @@ class _CircleMenuState extends State<CircleMenu> {
                               : SizedBox(),
                           Text.rich(TextAgent.generate(circle.content)),
                           circle.imageUrl != null
-                              ? FittedBox(
-                                  child: Image.network('${circle.imageUrl}'),
-                                  fit: BoxFit.contain,
-                                )
+                              ? GestureDetector(
+                                  onTap: () {
+                                    CircleGuiHelper.showPreviewImage(context, image: circle.imageUrl);
+                                  },
+                                  child: FittedBox(
+                                    child: Image.network('${circle.imageUrl}'),
+                                    fit: BoxFit.contain,
+                                  )
+                              )
                               : SizedBox(),
                           circle.videoPoster != null
                               ? FittedBox(
@@ -293,7 +301,6 @@ class _CircleMenuState extends State<CircleMenu> {
                       ),
                     );
                   },
-                ),
               );
             }
           },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../backends/user.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/textagent.dart';
+import '../backends/circle_gui_helper.dart';
 import 'profile.dart';
 
 class CircleDetailPage extends StatelessWidget {
@@ -137,6 +138,23 @@ class CircleDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text.rich(TextAgent.generate(circle.content)),
+                  circle.imageUrl != null
+                      ? GestureDetector(
+                          onTap: () {
+                            CircleGuiHelper.showPreviewImage(context, image: circle.imageUrl);
+                          },
+                          child: FittedBox(
+                            child: Image.network('${circle.imageUrl}'),
+                            fit: BoxFit.contain,
+                          )
+                      )
+                      : SizedBox(),
+                  circle.videoPoster != null
+                      ? FittedBox(
+                          child: Image.network('${circle.videoPoster}'),
+                          fit: BoxFit.contain,
+                        )
+                      : SizedBox(),
                   _buildActions(circle),
                   const Divider(
                     color: Colors.grey,
