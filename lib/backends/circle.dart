@@ -71,20 +71,9 @@ class Circle {
 
       // テキスト内容
       String? textContent = circle
-          .querySelector('.circle-content > div:not(.reply-to)')
+          .querySelector('.circle-content > div')
           ?.text
           .trim();
-
-      // 添付画像URL (存在する場合)
-      String? imageUrl =
-          circle.querySelector('.attached-image')?.attributes['src'];
-
-      String? videoPoster =
-          circle.querySelector('.attached-video')?.attributes['poster'];
-      String? videoUrl = null;
-      if (videoPoster != null) {
-        videoUrl = '/media/attached_video/${circle_id}.mp4';
-      }
 
       /* サークル情報を出力
       print('ユーザー名: $username');
@@ -99,13 +88,23 @@ class Circle {
         id: circle_id,
         user: await Manager.getUserDetails("${accountName}"),
         content: '${textContent}',
-        imageUrl: imageUrl,
-        videoPoster: videoPoster,
-        videoUrl: videoUrl,
+        imageUrl: null,
+        videoPoster: null,
+        videoUrl: null,
         replyed_to: replyed_to,
         reflew_name: null,
       ));
     }
+    circleslist.add(Circle(
+      id: "0",
+      user: await Manager.getUserDetails("fiicener"),
+      content: '${response.body}',
+      imageUrl: null,
+      videoPoster: null,
+      videoUrl: null,
+      replyed_to: replyed_to,
+      reflew_name: null,
+    ))
     return circleslist;
   }
 

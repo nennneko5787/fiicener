@@ -301,7 +301,7 @@ class _CircleMenuState extends State<CircleMenu> {
                       ),
                     );
                   },
-              );
+                );
             }
           },
         ),
