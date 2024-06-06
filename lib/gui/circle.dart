@@ -68,7 +68,7 @@ class CircleDetailPage extends StatelessWidget {
           return Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.comment),
+                icon: const Icon(Icons.comment_outlined),
                 onPressed: () {},
               ),
               const Text("Error"),
@@ -80,7 +80,7 @@ class CircleDetailPage extends StatelessWidget {
               const Text("Error"),
               const SizedBox(width: 16),
               IconButton(
-                icon: const Icon(Icons.favorite),
+                icon: const Icon(Icons.favorite_outline),
                 onPressed: () {},
               ),
               const Text("Error"),

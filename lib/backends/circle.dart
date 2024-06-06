@@ -46,7 +46,7 @@ class Circle {
     var replys = document.querySelector('.replys');
     List circles = [];
     if (replys != null) {
-      circles = replys.querySelectorAll('.circles');
+      circles = replys.querySelectorAll('.circle');
     }
 
     // 各サークルの情報を抽出する
@@ -95,16 +95,6 @@ class Circle {
         reflew_name: null,
       ));
     }
-    circleslist.add(Circle(
-      id: "0",
-      user: await Manager.getUserDetails("fiicener"),
-      content: '${response.body}',
-      imageUrl: null,
-      videoPoster: null,
-      videoUrl: null,
-      replyed_to: replyed_to,
-      reflew_name: null,
-    ));
     return circleslist;
   }
 
