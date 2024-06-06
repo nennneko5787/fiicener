@@ -104,7 +104,7 @@ class Circle {
       videoUrl: null,
       replyed_to: replyed_to,
       reflew_name: null,
-    ))
+    ));
     return circleslist;
   }
 
