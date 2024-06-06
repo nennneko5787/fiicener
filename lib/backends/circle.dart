@@ -261,7 +261,7 @@ class Circle {
 
   Future<bool> like() async {
     final response = await http.post(
-      Uri.parse('https://fiicen.jp/circle/refly/'),
+      Uri.parse('https://fiicen.jp/circle/like/'),
       body: {"circle_id": id},
       headers: {
         'User-Agent':
