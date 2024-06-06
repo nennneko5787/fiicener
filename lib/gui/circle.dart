@@ -163,8 +163,8 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                           child: FittedBox(
                             child: Image.network('${widget.circle.imageUrl}'),
                             fit: BoxFit.contain,
-                          )
-                      )
+                          ),
+                        )
                       : SizedBox(),
                   widget.circle.videoPoster != null
                       ? FittedBox(
@@ -198,33 +198,36 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                     itemCount: circles.length,
                     itemBuilder: (context, index) {
                       final c = circles[index];
-                      return ListTile(
-                        contentPadding: EdgeInsets.symmetric(vertical: 8.0),
-                        minVerticalPadding: 8.0 * 0.2,
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                _buildCircleAvatar(context, c),
-                                const SizedBox(width: 8),
-                                _buildUserInfo(c),
-                              ],
+                      return Transform.scale(
+                        scale: 0.8,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                          minVerticalPadding: 8.0 * 0.2,
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  _buildCircleAvatar(context, c),
+                                  const SizedBox(width: 8),
+                                  _buildUserInfo(c),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text.rich(TextAgent.generate(c.content)),
+                              _buildActions(c),
+                              const Divider(
+                                color: Colors.grey,
+                                thickness: 1,
+                                height: 2,
+                              ),
+                            ],
+                          ),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CircleDetailPage(circle: c),
                             ),
-                            const SizedBox(height: 8),
-                            Text.rich(TextAgent.generate(c.content)),
-                            _buildActions(c),
-                            const Divider(
-                              color: Colors.grey,
-                              thickness: 1,
-                              height: 2,
-                            ),
-                          ],
-                        ),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CircleDetailPage(circle: c),
                           ),
                         ),
                       );
