@@ -1,8 +1,6 @@
-import 'dart:ffi';
 
 import "circle.dart";
 import "manager.dart";
-import 'package:html/parser.dart' as htmlParser;
 import 'package:http/http.dart' as http;
 
 class User {
@@ -23,9 +21,9 @@ class User {
   });
 
   Future<List<User>> getFollowers() async {
-    final followers_res = await http.get(
+    final followersRes = await http.get(
       Uri.parse(
-          'https://fiicen.jp/account/followers/?account_id=${this.userID}'),
+          'https://fiicen.jp/account/followers/?account_id=$userID'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -41,7 +39,7 @@ class User {
     List<String> accountNames = [];
 
     // 正規表現で全てのマッチを見つける
-    Iterable<Match> matches = regExp.allMatches(followers_res.body);
+    Iterable<Match> matches = regExp.allMatches(followersRes.body);
 
     // 各マッチについて、キャプチャしたグループをリストに追加
     for (var match in matches) {
@@ -59,9 +57,9 @@ class User {
   }
 
   Future<int> getFollowersCount() async {
-    final followers_res = await http.get(
+    final followersRes = await http.get(
       Uri.parse(
-          'https://fiicen.jp/account/followers/?account_id=${this.userID}'),
+          'https://fiicen.jp/account/followers/?account_id=$userID'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -73,14 +71,14 @@ class User {
     // 抽出したい部分にマッチする正規表現
     RegExp regExp = RegExp(r'/field/([^/]+)/');
     // 正規表現で全てのマッチを見つける
-    Iterable<Match> matches = regExp.allMatches(followers_res.body);
+    Iterable<Match> matches = regExp.allMatches(followersRes.body);
     return matches.length;
   }
 
   Future<List<User>> getFollowing() async {
-    final following_res = await http.get(
+    final followingRes = await http.get(
       Uri.parse(
-          'https://fiicen.jp/account/following/?account_id=${this.userID}'),
+          'https://fiicen.jp/account/following/?account_id=$userID'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -96,7 +94,7 @@ class User {
     List<String> accountNames = [];
 
     // 正規表現で全てのマッチを見つける
-    Iterable<Match> matches = regExp.allMatches(following_res.body);
+    Iterable<Match> matches = regExp.allMatches(followingRes.body);
 
     // 各マッチについて、キャプチャしたグループをリストに追加
     for (var match in matches) {
@@ -114,9 +112,9 @@ class User {
   }
 
   Future<int> getFollowingCount() async {
-    final following_res = await http.get(
+    final followingRes = await http.get(
       Uri.parse(
-          'https://fiicen.jp/account/following/?account_id=${this.userID}'),
+          'https://fiicen.jp/account/following/?account_id=$userID'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -128,7 +126,7 @@ class User {
     // 抽出したい部分にマッチする正規表現
     RegExp regExp = RegExp(r'/field/([^/]+)/');
     // 正規表現で全てのマッチを見つける
-    Iterable<Match> matches = regExp.allMatches(following_res.body);
+    Iterable<Match> matches = regExp.allMatches(followingRes.body);
     return matches.length;
   }
 }

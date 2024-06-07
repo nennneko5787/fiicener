@@ -21,7 +21,7 @@ class CircleGuiHelper {
                     minScale: 0.1,
                     maxScale: 5,
                     child: Image.network(
-                      '${image}',
+                      '$image',
                     ),
                   ),
                 ),

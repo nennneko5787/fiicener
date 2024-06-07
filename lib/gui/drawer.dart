@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../backends/manager.dart';
-import 'package:http/http.dart' as http;
 import 'login.dart';
 import 'profile.dart';
 
 class DrawerMenu extends StatefulWidget {
-  const DrawerMenu();
+  const DrawerMenu({super.key});
 
   @override
   _DrawerMenuState createState() => _DrawerMenuState();
@@ -49,12 +48,12 @@ class _DrawerMenuState extends State<DrawerMenu> {
                 children: [
                   Text(
                     'フォロー中: $followingCount',
-                    style: TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 12),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     'フォロワー: $followersCount',
-                    style: TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 12),
                   ),
                 ],
               ),
@@ -70,7 +69,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               );
             },
           ),
-          Divider(
+          const Divider(
             color: Colors.grey, // 区切り線の色を設定します
             thickness: 1, // 区切り線の太さを設定します
             height: 20, // 区切り線の上下の余白を設定します
@@ -88,7 +87,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
               Manager.saveCsrfToken(null);
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
           ),

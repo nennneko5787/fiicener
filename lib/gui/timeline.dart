@@ -6,14 +6,14 @@ import 'appbar.dart';
 import 'post.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage();
+  const MyHomePage({super.key});
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  StatefulWidget body = CircleMenu();
+  StatefulWidget body = const CircleMenu();
 
   @override
   void initState() {
@@ -23,21 +23,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarMenu(),
-      drawer: DrawerMenu(),
+      appBar: const AppBarMenu(),
+      drawer: const DrawerMenu(),
       body: body,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PostMenu()),
+            MaterialPageRoute(builder: (context) => const PostMenu()),
           );
         },
         tooltip: 'サークルを飛ばす',
-        child: Icon(Icons.add),
         backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: Footer(),
+      bottomNavigationBar: const Footer(),
     );
   }
 }

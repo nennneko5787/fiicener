@@ -10,7 +10,7 @@ import 'circle.dart';
 import 'footer.dart';
 
 class CircleMenu extends StatefulWidget {
-  const CircleMenu();
+  const CircleMenu({super.key});
 
   @override
   _CircleMenuState createState() => _CircleMenuState();
@@ -93,8 +93,8 @@ class _CircleMenuState extends State<CircleMenu> {
       ]),
       builder: (context, AsyncSnapshot<List<int>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Row(
-            children: const [
+          return const Row(
+            children: [
               CircularProgressIndicator(),
             ],
           );
@@ -174,7 +174,7 @@ class _CircleMenuState extends State<CircleMenu> {
           future: _circlesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
             } else if (snapshot.hasError) {
@@ -207,7 +207,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                           Row(children: [
                                             GestureDetector(
                                               onTap: () async {
-                                                User _user = await Manager
+                                                User user = await Manager
                                                     .getUserDetails(
                                                         '${circle.reflew_name}');
                                                 Navigator.push(
@@ -215,15 +215,15 @@ class _CircleMenuState extends State<CircleMenu> {
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                           ProfilePage(
-                                                              user: _user)),
+                                                              user: user)),
                                                 );
                                               },
                                               child: Text(
                                                   '@${circle.reflew_name}',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.lightBlue)),
                                             ),
-                                            Text(
+                                            const Text(
                                               ' がリポストしました',
                                             ),
                                           ]),
@@ -231,14 +231,14 @@ class _CircleMenuState extends State<CircleMenu> {
                                         ],
                                       ),
                                     ),
-                                    Divider(
+                                    const Divider(
                                       color: Colors.grey,
                                       thickness: 1,
                                       height: 2,
                                     ),
                                   ],
                                 )
-                              : SizedBox(),
+                              : const SizedBox(),
                           Row(
                             children: [
                               _buildCircleAvatar(circle),
@@ -252,21 +252,21 @@ class _CircleMenuState extends State<CircleMenu> {
                                   const Text('返信先: '),
                                   GestureDetector(
                                     onTap: () async {
-                                      User _user = await Manager.getUserDetails(
+                                      User user = await Manager.getUserDetails(
                                           '${circle.reflew_name}');
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                ProfilePage(user: _user)),
+                                                ProfilePage(user: user)),
                                       );
                                     },
                                     child: Text('@${circle.reflew_name}',
                                         style:
-                                            TextStyle(color: Colors.lightBlue)),
+                                            const TextStyle(color: Colors.lightBlue)),
                                   ),
                                 ])
-                              : SizedBox(),
+                              : const SizedBox(),
                           Text.rich(TextAgent.generate(circle.content)),
                           circle.imageUrl != null
                               ? GestureDetector(
@@ -274,17 +274,17 @@ class _CircleMenuState extends State<CircleMenu> {
                                     CircleGuiHelper.showPreviewImage(context, image: circle.imageUrl);
                                   },
                                   child: FittedBox(
-                                    child: Image.network('${circle.imageUrl}'),
                                     fit: BoxFit.contain,
+                                    child: Image.network('${circle.imageUrl}'),
                                   )
                               )
-                              : SizedBox(),
+                              : const SizedBox(),
                           circle.videoPoster != null
                               ? FittedBox(
-                                  child: Image.network('${circle.videoPoster}'),
                                   fit: BoxFit.contain,
+                                  child: Image.network('${circle.videoPoster}'),
                                 )
-                              : SizedBox(),
+                              : const SizedBox(),
                           _buildActions(circle),
                           const Divider(
                             color: Colors.grey,

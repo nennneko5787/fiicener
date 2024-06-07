@@ -4,11 +4,10 @@ import 'package:http_parser/http_parser.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../backends/manager.dart'; // セッションとCSRFトークンをロードするためのカスタムモジュール
-import 'timeline.dart'; // 投稿後に表示する画面
-import 'profile.dart';
+// 投稿後に表示する画面
 
 class PostMenu extends StatefulWidget {
-  const PostMenu();
+  const PostMenu({super.key});
 
   @override
   _PostMenu createState() => _PostMenu();
@@ -39,8 +38,8 @@ class _PostMenu extends State<PostMenu> {
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       setState(() {
@@ -56,8 +55,8 @@ class _PostMenu extends State<PostMenu> {
   }
 
   Future<void> _pickVideo() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
 
     if (video != null) {
       setState(() {
@@ -83,8 +82,8 @@ class _PostMenu extends State<PostMenu> {
             'POST', Uri.parse('https://fiicen.jp/circle/create/'));
         request.headers['User-Agent'] =
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
-        request.headers['Cookie'] = 'sessionid=${session}; csrftoken=${csrf};';
-        request.headers['X-Csrftoken'] = '${csrf}';
+        request.headers['Cookie'] = 'sessionid=$session; csrftoken=$csrf;';
+        request.headers['X-Csrftoken'] = '$csrf';
 
         request.fields['contents'] = postContent;
         if (_selectedImage != null) {
@@ -109,7 +108,7 @@ class _PostMenu extends State<PostMenu> {
           // 投稿が成功した場合、タイムライン画面に遷移
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Post posted!')),
+            const SnackBar(content: Text('Post posted!')),
           );
           _postController.clear();
           setState(() {
@@ -145,12 +144,12 @@ class _PostMenu extends State<PostMenu> {
             builder: (context, isEnabled, child) {
               return ElevatedButton(
                 onPressed: isEnabled ? _postPost : null,
-                child: Text(
-                  'Post',
-                  style: TextStyle(color: Colors.white),
-                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isEnabled ? Colors.blue : Colors.grey,
+                ),
+                child: const Text(
+                  'Post',
+                  style: TextStyle(color: Colors.white),
                 ),
               );
             },
@@ -159,7 +158,7 @@ class _PostMenu extends State<PostMenu> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               TextField(
@@ -173,17 +172,17 @@ class _PostMenu extends State<PostMenu> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _pickImage,
-                child: Text('画像を選択'),
+                child: const Text('画像を選択'),
               ),
               const SizedBox(height: 20),
               _selectedImage == null
-                  ? SizedBox()
+                  ? const SizedBox()
                   : Column(
                       children: [
                         Image.file(_selectedImage!),
                         TextButton(
                           onPressed: _clearImage,
-                          child: Text(
+                          child: const Text(
                             '画像を解除',
                             style: TextStyle(color: Colors.red),
                           ),
@@ -193,17 +192,17 @@ class _PostMenu extends State<PostMenu> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _pickVideo,
-                child: Text('動画を添付'),
+                child: const Text('動画を添付'),
               ),
               const SizedBox(height: 20),
               _selectedVideo == null
-                  ? SizedBox()
+                  ? const SizedBox()
                   : Column(
                       children: [
                         Text('${_selectedVideo?.path}'),
                         TextButton(
                           onPressed: _clearVideo,
-                          child: Text(
+                          child: const Text(
                             '動画を解除',
                             style: TextStyle(color: Colors.red),
                           ),

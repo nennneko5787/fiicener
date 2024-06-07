@@ -5,23 +5,23 @@ import 'profile.dart';
 class FollowingPage extends StatelessWidget {
   final Future<List<User>> followingFuture;
 
-  const FollowingPage({required this.followingFuture});
+  const FollowingPage({super.key, required this.followingFuture});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('フォロー中'),
+        title: const Text('フォロー中'),
       ),
       body: FutureBuilder<List<User>>(
         future: followingFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No following found'));
+            return const Center(child: Text('No following found'));
           }
           return ListView.builder(
             itemCount: snapshot.data!.length,

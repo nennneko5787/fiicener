@@ -7,14 +7,14 @@ import 'circle.dart';
 import 'dart:convert';
 
 class Manager {
-  static final storage = FlutterSecureStorage();
-  static User me = User(
+  static const storage = FlutterSecureStorage();
+  static User me = const User(
     userName: '',
     userHandle: '',
     userID: '',
     avatarUrl: '',
     bio: "",
-    circles: const [],
+    circles: [],
   );
 
   static Future<void> saveSessionToken(String? token) async {
@@ -47,7 +47,7 @@ class Manager {
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=${session}; csrftoken=${csrf};',
+        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
       },
     );
 
@@ -64,13 +64,13 @@ class Manager {
 
   static Future<User> getUserDetails(String userId) async {
     if (userId == "") {
-      return User(
+      return const User(
         userName: "ユーザーの取得に失敗しました。",
         userHandle: "",
         userID: "",
         avatarUrl: "",
         bio: "ユーザーの取得に失敗しました。",
-        circles: const [],
+        circles: [],
       );
     }
     final response = await http.get(
@@ -87,9 +87,9 @@ class Manager {
         RegExp(r"openModal\('/account/followers/\?account_id=(\d+)'");
     Match? match = regExp.firstMatch(response.body);
 
-    String account_num = "";
+    String accountNum = "";
     if (match != null) {
-      account_num = match.group(1) ?? '';
+      accountNum = match.group(1) ?? '';
     }
 
     var document = htmlParser.parse(response.body);
@@ -98,22 +98,22 @@ class Manager {
     String iconurl = "";
     if (iconElement != null) {
       iconurl = iconElement.attributes['src'] ?? '';
-      iconurl = 'https://fiicen.jp' + iconurl;
+      iconurl = 'https://fiicen.jp$iconurl';
     }
 
     var dElement = document.querySelector('div[class="display-name"]');
-    String display_name = dElement?.text ?? '';
+    String displayName = dElement?.text ?? '';
 
     var aElement = document.querySelector('div[class="account-name"]');
-    String account_name = aElement?.text ?? '';
+    String accountName = aElement?.text ?? '';
 
     var iElement = document.querySelector('div[class="introduce"]');
     String introduce = iElement?.text ?? '';
 
     return User(
-      userName: display_name,
-      userHandle: account_name,
-      userID: account_num,
+      userName: displayName,
+      userHandle: accountName,
+      userID: accountNum,
       avatarUrl: iconurl,
       bio: introduce,
       circles: const [],
@@ -129,7 +129,7 @@ class Manager {
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=${session}; csrftoken=${csrf};',
+        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
       },
     );
 
@@ -146,7 +146,7 @@ class Manager {
       // クラスリストを取得
       List<String> classList = circle.classes.toList();
 
-      String circle_id = "";
+      String circleId = "";
 
       // 各クラス名をチェック
       for (var className in classList) {
@@ -156,7 +156,7 @@ class Manager {
 
         // マッチした場合、(.*) の部分をリストに追加
         if (match != null) {
-          circle_id = match.group(1)!;
+          circleId = match.group(1)!;
         }
       }
 
@@ -179,16 +179,16 @@ class Manager {
       String? imageUrlRaw =
           circle.querySelector('.attached-image')?.attributes['src'];
 
-      String imageUrl = 'https://fiicen.jp${imageUrlRaw}';
+      String imageUrl = 'https://fiicen.jp$imageUrlRaw';
 
       String? videoPoster =
           circle.querySelector('.attached-video')?.attributes['poster'];
-      String? videoUrl = null;
+      String? videoUrl;
       if (videoPoster != null) {
-        videoUrl = 'https://fiicen.jp/media/attached_video/${circle_id}.mp4';
+        videoUrl = 'https://fiicen.jp/media/attached_video/$circleId.mp4';
       }
 
-      String? replyed_to = null;
+      String? replyedTo;
       String? replyHTML = circle.querySelector('.reply-to')?.innerHtml;
       if (replyHTML != null) {
         // 正規表現でマッチ
@@ -197,11 +197,11 @@ class Manager {
 
         // マッチした場合、(.*) の部分をリストに追加
         if (match != null) {
-          replyed_to = match.group(1)!;
+          replyedTo = match.group(1)!;
         }
       }
 
-      String? reflew_name = null;
+      String? reflewName;
       String? reflewNameHTML =
           circle.querySelector('.reflew-display-name')?.innerHtml;
       if (reflewNameHTML != null) {
@@ -211,7 +211,7 @@ class Manager {
 
         // マッチした場合、(.*) の部分をリストに追加
         if (match != null) {
-          reflew_name = match.group(1)!;
+          reflewName = match.group(1)!;
         }
       }
 
@@ -234,14 +234,14 @@ class Manager {
       print('---');
       */
       circleslist.add(Circle(
-          id: circle_id,
-          user: await getUserDetails("${accountName}"),
-          content: '${textContent}',
+          id: circleId,
+          user: await getUserDetails("$accountName"),
+          content: textContent,
           imageUrl: imageUrl,
           videoPoster: videoPoster,
           videoUrl: videoUrl,
-          replyed_to: replyed_to,
-          reflew_name: reflew_name,
+          replyed_to: replyedTo,
+          reflew_name: reflewName,
           liked: liked,
           reflown: reflown
         ));
@@ -258,7 +258,7 @@ class Manager {
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=${session}; csrftoken=${csrf};',
+        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
       },
     );
 

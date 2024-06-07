@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class TextAgent {
@@ -10,35 +9,35 @@ class TextAgent {
       );
 
   static TextSpan generateLinkTextSpan(String url) {
-    final _encadedUrl = Uri.encodeFull(url);
-    final _recognizer = TapGestureRecognizer()
+    final encadedUrl = Uri.encodeFull(url);
+    final recognizer = TapGestureRecognizer()
       ..onTap = () async {
-        await launchUrlString(_encadedUrl,
+        await launchUrlString(encadedUrl,
             mode: LaunchMode.externalApplication);
       };
-    final _textSpan = TextSpan(
+    final textSpan = TextSpan(
       text: url,
-      recognizer: _recognizer,
-      style: TextStyle(color: Colors.lightBlue),
+      recognizer: recognizer,
+      style: const TextStyle(color: Colors.lightBlue),
     );
-    return _textSpan;
+    return textSpan;
   }
 
-  static TextSpan generate(String _rawText) {
-    final List<TextSpan> _textSpans = [];
-    _rawText.splitMapJoin(
+  static TextSpan generate(String rawText) {
+    final List<TextSpan> textSpans = [];
+    rawText.splitMapJoin(
       _urlRegExp,
       onMatch: (Match match) {
-        final _urlSpan = generateLinkTextSpan(match.group(0) ?? '');
-        _textSpans.add(_urlSpan);
+        final urlSpan = generateLinkTextSpan(match.group(0) ?? '');
+        textSpans.add(urlSpan);
         return '';
       },
       onNonMatch: (String text) {
-        final _commonSpan = TextSpan(text: text);
-        _textSpans.add(_commonSpan);
+        final commonSpan = TextSpan(text: text);
+        textSpans.add(commonSpan);
         return '';
       },
     );
-    return TextSpan(children: _textSpans);
+    return TextSpan(children: textSpans);
   }
 }

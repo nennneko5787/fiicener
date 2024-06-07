@@ -3,10 +3,10 @@ import 'gui/login.dart';
 import 'gui/timeline.dart';
 import 'backends/manager.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,19 +15,19 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // データの読み込み中はローディングなどの表示を行う
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         } else {
           if (snapshot.hasError) {
             // エラーが発生した場合の処理
-            return Center(child: Text('エラーが発生しました'));
+            return const Center(child: Text('エラーが発生しました'));
           } else {
             // データの読み込みが完了した場合の処理
             bool isloggedin = snapshot.data!;
             Widget home;
             if (!isloggedin) {
-              home = LoginPage();
+              home = const LoginPage();
             } else {
-              home = MyHomePage();
+              home = const MyHomePage();
             }
             return MaterialApp(
               title: 'Fiicener',

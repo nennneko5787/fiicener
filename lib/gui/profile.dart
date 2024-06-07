@@ -7,7 +7,7 @@ import 'following.dart';
 class ProfilePage extends StatefulWidget {
   final User user;
 
-  const ProfilePage({required this.user});
+  const ProfilePage({super.key, required this.user});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -74,11 +74,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     future: _followersCountFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
-                        return Text('Error');
+                        return const Text('Error');
                       } else if (!snapshot.hasData) {
-                        return Text('0');
+                        return const Text('0');
                       }
                       return GestureDetector(
                         onTap: () {
@@ -94,10 +94,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             Text(
                               snapshot.data.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
-                            Text('フォロワー', style: TextStyle(fontSize: 16)),
+                            const Text('フォロワー', style: TextStyle(fontSize: 16)),
                           ],
                         ),
                       );
@@ -107,11 +107,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     future: _followingCountFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
-                        return Text('Error');
+                        return const Text('Error');
                       } else if (!snapshot.hasData) {
-                        return Text('0');
+                        return const Text('0');
                       }
                       return GestureDetector(
                         onTap: () {
@@ -127,10 +127,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             Text(
                               snapshot.data.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
-                            Text('フォロー中', style: TextStyle(fontSize: 16)),
+                            const Text('フォロー中', style: TextStyle(fontSize: 16)),
                           ],
                         ),
                       );

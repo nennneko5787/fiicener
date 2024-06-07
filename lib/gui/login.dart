@@ -3,17 +3,18 @@ import 'package:http/http.dart' as http;
 import 'appbar.dart';
 import '../backends/manager.dart';
 import 'package:html/parser.dart' as htmlParser;
-import 'package:html/dom.dart' as html;
 import 'timeline.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   Future<void> login() async {
     final response = await http.get(
@@ -85,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
           await Manager.initialize();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MyHomePage()),
+            MaterialPageRoute(builder: (context) => const MyHomePage()),
           );
         }
       } else {
@@ -93,14 +94,14 @@ class _LoginPageState extends State<LoginPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('エラー！'),
-              content: Text('ログインに失敗しました。'),
+              title: const Text('エラー！'),
+              content: const Text('ログインに失敗しました。'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -112,14 +113,14 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('エラー'),
-            content: Text('トークンの取得に失敗しました。'),
+            title: const Text('エラー'),
+            content: const Text('トークンの取得に失敗しました。'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -131,35 +132,35 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarMenu(),
+      appBar: const AppBarMenu(),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: AutofillGroup(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextField(
                 controller: _usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'アカウント名',
                 ),
                 autofillHints: const [AutofillHints.username],
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextField(
                 controller: _passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'パスワード',
                 ),
                 autofillHints: const [AutofillHints.password],
                 obscureText: true,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: login, // Pass the function without calling it
-                child: Text('ログイン'),
+                child: const Text('ログイン'),
               ),
             ],
           ),

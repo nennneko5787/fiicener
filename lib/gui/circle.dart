@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../backends/user.dart';
 import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
 import '../backends/textagent.dart';
 import '../backends/circle_gui_helper.dart';
@@ -8,7 +7,7 @@ import 'profile.dart';
 class CircleDetailPage extends StatefulWidget {
   final Circle circle;
 
-  const CircleDetailPage({Key? key, required this.circle}) : super(key: key);
+  const CircleDetailPage({super.key, required this.circle});
 
   @override
   _CircleDetailPageState createState() => _CircleDetailPageState();
@@ -64,8 +63,8 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
       ]),
       builder: (context, AsyncSnapshot<List<int>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Row(
-            children: const [
+          return const Row(
+            children: [
               CircularProgressIndicator(),
             ],
           );
@@ -134,7 +133,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('サークル'),
+        title: const Text('サークル'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -161,17 +160,17 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                             CircleGuiHelper.showPreviewImage(context, image: widget.circle.imageUrl);
                           },
                           child: FittedBox(
-                            child: Image.network('${widget.circle.imageUrl}'),
                             fit: BoxFit.contain,
+                            child: Image.network('${widget.circle.imageUrl}'),
                           )
                       )
-                      : SizedBox(),
+                      : const SizedBox(),
                   widget.circle.videoPoster != null
                       ? FittedBox(
-                          child: Image.network('${widget.circle.videoPoster}'),
                           fit: BoxFit.contain,
+                          child: Image.network('${widget.circle.videoPoster}'),
                         )
-                      : SizedBox(),
+                      : const SizedBox(),
                   _buildActions(widget.circle),
                   const Divider(
                     color: Colors.grey,
@@ -179,6 +178,13 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                     height: 2,
                   ),
                 ],
+              ),
+            ),
+            TextField(
+              keyboardType: const TextInputType.multiline,
+              maxLines: null,
+              decoration: const InputDecoration(
+                hintText: "返信をポスト",
               ),
             ),
             FutureBuilder<List<Circle>>(
@@ -194,12 +200,12 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                   final circles = snapshot.data!;
                   return ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: circles.length,
                     itemBuilder: (context, index) {
                       final c = circles[index];
                       return ListTile(
-                        contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
                         minVerticalPadding: 8.0 * 0.2,
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,5 +1,6 @@
 import "manager.dart";
 import "user.dart";
+import 'reporttype.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:http/http.dart' as http;
 
@@ -33,11 +34,11 @@ class Circle {
     String? csrf = await Manager.loadCsrfToken();
 
     final response = await http.get(
-      Uri.parse('https://fiicen.jp/circle/${id}/'),
+      Uri.parse('https://fiicen.jp/circle/$id/'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=${session}; csrftoken=${csrf};',
+        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
       },
     );
 
@@ -55,16 +56,16 @@ class Circle {
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
-      String replyed_to = user.userName;
+      String replyedTo = user.userName;
 
-      String circle_id = "";
+      String circleId = "";
 
       RegExp regExp = RegExp(r"openSlidePanel\('\/circle\/(\d+)'\)");
       var match = regExp.firstMatch(circle?.innerHtml);
 
       // マッチした場合、(.*) の部分をリストに追加
       if (match != null) {
-        circle_id = match.group(1)!;
+        circleId = match.group(1)!;
       }
 
       // アカウント名
@@ -98,13 +99,13 @@ class Circle {
       print('---');
       */
       circleslist.add(Circle(
-        id: circle_id,
-        user: await Manager.getUserDetails("${accountName}"),
-        content: '${textContent}',
+        id: circleId,
+        user: await Manager.getUserDetails("$accountName"),
+        content: '$textContent',
         imageUrl: null,
         videoPoster: null,
         videoUrl: null,
-        replyed_to: replyed_to,
+        replyed_to: replyedTo,
         reflew_name: null,
         liked: liked,
         reflown: reflown,
@@ -118,11 +119,11 @@ class Circle {
     String? csrf = await Manager.loadCsrfToken();
 
     final response = await http.get(
-      Uri.parse('https://fiicen.jp/circle/${id}/'),
+      Uri.parse('https://fiicen.jp/circle/$id/'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=${session}; csrftoken=${csrf};',
+        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
       },
     );
     // HTMLをパースする
@@ -134,8 +135,8 @@ class Circle {
   }
 
   Future<List<User>> getReflyUsers() async {
-    final reflys_res = await http.get(
-      Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=${id}'),
+    final reflysRes = await http.get(
+      Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=$id'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -151,7 +152,7 @@ class Circle {
     List<String> accountNames = [];
 
     // 正規表現で全てのマッチを見つける
-    Iterable<Match> matches = regExp.allMatches(reflys_res.body);
+    Iterable<Match> matches = regExp.allMatches(reflysRes.body);
 
     // 各マッチについて、キャプチャしたグループをリストに追加
     for (var match in matches) {
@@ -169,8 +170,8 @@ class Circle {
   }
 
   Future<int> getReflyUsersCount() async {
-    final reflys_res = await http.get(
-      Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=${id}'),
+    final reflysRes = await http.get(
+      Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=$id'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -182,13 +183,13 @@ class Circle {
     // 抽出したい部分にマッチする正規表現
     RegExp regExp = RegExp(r'/field/([^/]+)/');
     // 正規表現で全てのマッチを見つける
-    Iterable<Match> matches = regExp.allMatches(reflys_res.body);
+    Iterable<Match> matches = regExp.allMatches(reflysRes.body);
     return matches.length;
   }
 
   Future<List<User>> getLikedUsers() async {
-    final likes_res = await http.get(
-      Uri.parse('https://fiicen.jp/circle/likes/?circle_id=${id}'),
+    final likesRes = await http.get(
+      Uri.parse('https://fiicen.jp/circle/likes/?circle_id=$id'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -204,7 +205,7 @@ class Circle {
     List<String> accountNames = [];
 
     // 正規表現で全てのマッチを見つける
-    Iterable<Match> matches = regExp.allMatches(likes_res.body);
+    Iterable<Match> matches = regExp.allMatches(likesRes.body);
 
     // 各マッチについて、キャプチャしたグループをリストに追加
     for (var match in matches) {
@@ -222,8 +223,8 @@ class Circle {
   }
 
   Future<int> getLikedUsersCount() async {
-    final likes_res = await http.get(
-      Uri.parse('https://fiicen.jp/circle/likes/?circle_id=${id}'),
+    final likesRes = await http.get(
+      Uri.parse('https://fiicen.jp/circle/likes/?circle_id=$id'),
       headers: {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -235,7 +236,7 @@ class Circle {
     // 抽出したい部分にマッチする正規表現
     RegExp regExp = RegExp(r'/field/([^/]+)/');
     // 正規表現で全てのマッチを見つける
-    Iterable<Match> matches = regExp.allMatches(likes_res.body);
+    Iterable<Match> matches = regExp.allMatches(likesRes.body);
     return matches.length;
   }
 
@@ -252,7 +253,7 @@ class Circle {
       },
     );
     if (response.statusCode == 200) {
-      this.reflown = !this.reflown;
+      reflown = !reflown;
       return true;
     } else {
       return false;
@@ -272,9 +273,55 @@ class Circle {
       },
     );
     if (response.statusCode == 200) {
-      this.liked = !this.liked;
+      liked = !liked;
       return true;
     } else {
+      return false;
+    }
+  }
+
+  Future<bool> reply({
+    required String circle,
+    required String content
+  }) async {
+    String? session = await Manager.loadSessionToken();
+    String? csrf = await Manager.loadCsrfToken();
+
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('https://fiicen.jp/circle/create/'));
+    request.headers['User-Agent'] =
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
+    request.headers['Cookie'] = 'sessionid=$session; csrftoken=$csrf;';
+    request.headers['X-Csrftoken'] = '$csrf';
+
+    request.fields['circle_id'] = id;
+    request.fields['contents'] = content;
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  Future<bool> report(ReportTypes type) async {
+    final response = await http.post(
+      Uri.parse('https://fiicen.jp/report/circle/${id}/'),
+      body: {"type": type.name},
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
+        'Cookie':
+            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    }else{
       return false;
     }
   }

@@ -5,7 +5,7 @@ import '../backends/manager.dart';
 class Footer extends StatefulWidget {
   static GlobalKey<_FooterState> footerKey = GlobalKey<_FooterState>();
 
-  const Footer();
+  const Footer({super.key});
 
   @override
   _FooterState createState() => _FooterState();
@@ -36,12 +36,12 @@ class _FooterState extends State<Footer> {
       type:
           BottomNavigationBarType.fixed, // or BottomNavigationBarType.shifting
       items: [
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.home),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home),
           label: 'ホーム', // 'title' is deprecated, use 'label'
         ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.search),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.search),
           label: '探す',
         ),
         BottomNavigationBarItem(
@@ -49,12 +49,12 @@ class _FooterState extends State<Footer> {
               ? badges.Badge(
                   // notificationCountが0より大きい場合のみバッジを表示
                   badgeContent: Text('$notificationCount'),
-                  badgeStyle: badges.BadgeStyle(
+                  badgeStyle: const badges.BadgeStyle(
                     badgeColor: Colors.blue,
                   ),
                   child: const Icon(Icons.notifications),
                 )
-              : Icon(Icons.notifications),
+              : const Icon(Icons.notifications),
           label: '通知',
         ),
       ],
