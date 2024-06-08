@@ -38,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadCircles(int page) async {
     try {
       _circlesFuture = widget.user.getPostedCircles(page: page);
+      await _circlesFuture;
     } catch (e) {
       // エラー処理
     }

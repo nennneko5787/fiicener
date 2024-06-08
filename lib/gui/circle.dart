@@ -44,7 +44,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
         ),
         Text(
           circle.user.userHandle,
-          style: const TextStyle(color: Colors.grey),
+          style: const TextStyle(color: Colors.black),
         ),
       ],
     );
@@ -97,7 +97,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.repeat),
-                color: circle.reflown ? Colors.green : Colors.grey,
+                color: circle.reflown ? Colors.green : Colors.black,
                 onPressed: () async {
                   bool reflown = await circle.refly();
                   if (reflown) {
@@ -108,7 +108,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
               Text(snapshot.data![1].toString()),
               const SizedBox(width: 16),
               IconButton(
-                color: circle.liked ? Colors.pink : Colors.grey,
+                color: circle.liked ? Colors.pink : Colors.black,
                 icon: circle.liked ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
                 onPressed: () async {
                   bool liked = await circle.like();
@@ -169,105 +169,105 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                       : const SizedBox(),
                   _buildActions(widget.circle),
                   const Divider(
-                    color: Colors.grey,
+                    color: Colors.black,
                     thickness: 1,
                     height: 2,
                   ),
+                  TextField(
+                    controller: replyTextFieldController,
+                    maxLines: null,
+                    decoration: const InputDecoration(
+                      hintText: "返信をポスト",
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (replyTextFieldController.text != ""){
+                        String _text = replyTextFieldController.text;
+                        replyTextFieldController.text = "";
+                        bool isPosted = await widget.circle.reply(_text);
+                        if (isPosted){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('返信がポストされました。')),
+                          );
+                        }else{
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('返信できませんでした。')),
+                          );
+                        }
+                      }else{
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('本文は空欄であってはいけません。')),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue
+                    ),
+                    child: const Text(
+                      'ポスト',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const Divider(
+                    color: Colors.black,
+                    thickness: 1,
+                    height: 2,
+                  ),
+                  FutureBuilder<List<Circle>>(
+                    future: widget.circle.getReplys(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const SizedBox();
+                      } else {
+                        final circles = snapshot.data!;
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: circles.length,
+                          itemBuilder: (context, index) {
+                            final c = circles[index];
+                            return ListTile(
+                              contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
+                              minVerticalPadding: 8.0 * 0.2,
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      _buildCircleAvatar(context, c),
+                                      const SizedBox(width: 8),
+                                      _buildUserInfo(c),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text.rich(TextAgent.generate(c.content, context)),
+                                  _buildActions(c),
+                                  const Divider(
+                                    color: Colors.black,
+                                    thickness: 1,
+                                    height: 2,
+                                  ),
+                                ],
+                              ),
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CircleDetailPage(circle: c),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
-            ),
-            TextField(
-              controller: replyTextFieldController,
-              maxLines: null,
-              decoration: const InputDecoration(
-                hintText: "返信をポスト",
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (replyTextFieldController.text != ""){
-                  String _text = replyTextFieldController.text;
-                  replyTextFieldController.text = "";
-                  bool isPosted = await widget.circle.reply(_text);
-                  if (isPosted){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('返信がポストされました。')),
-                    );
-                  }else{
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('返信できませんでした。')),
-                    );
-                  }
-                }else{
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('本文は空欄であってはいけません。')),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue
-              ),
-              child: const Text(
-                'ポスト',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            const Divider(
-              color: Colors.grey,
-              thickness: 1,
-              height: 2,
-            ),
-            FutureBuilder<List<Circle>>(
-              future: widget.circle.getReplys(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const SizedBox();
-                } else {
-                  final circles = snapshot.data!;
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: circles.length,
-                    itemBuilder: (context, index) {
-                      final c = circles[index];
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
-                        minVerticalPadding: 8.0 * 0.2,
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                _buildCircleAvatar(context, c),
-                                const SizedBox(width: 8),
-                                _buildUserInfo(c),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text.rich(TextAgent.generate(c.content, context)),
-                            _buildActions(c),
-                            const Divider(
-                              color: Colors.grey,
-                              thickness: 1,
-                              height: 2,
-                            ),
-                          ],
-                        ),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CircleDetailPage(circle: c),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
             ),
           ],
         ),

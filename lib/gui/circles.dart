@@ -78,7 +78,7 @@ class _CircleMenuState extends State<CircleMenu> {
         ),
         Text(
           circle.user.userHandle,
-          style: const TextStyle(color: Colors.grey),
+          style: const TextStyle(color: Colors.black),
         ),
       ],
     );
@@ -131,7 +131,7 @@ class _CircleMenuState extends State<CircleMenu> {
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.repeat),
-                color: circle.reflown ? Colors.green : Colors.grey,
+                color: circle.reflown ? Colors.green : Colors.black,
                 onPressed: () async {
                   bool reflown = await circle.refly();
                   if (reflown) {
@@ -142,7 +142,7 @@ class _CircleMenuState extends State<CircleMenu> {
               Text(snapshot.data![1].toString()),
               const SizedBox(width: 16),
               IconButton(
-                color: circle.liked ? Colors.pink : Colors.grey,
+                color: circle.liked ? Colors.pink : Colors.black,
                 icon: circle.liked ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
                 onPressed: () async {
                   bool liked = await circle.like();
@@ -233,7 +233,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                       ),
                                     ),
                                     const Divider(
-                                      color: Colors.grey,
+                                      color: Colors.black,
                                       thickness: 1,
                                       height: 2,
                                     ),
@@ -288,7 +288,7 @@ class _CircleMenuState extends State<CircleMenu> {
                               : const SizedBox(),
                           _buildActions(circle),
                           const Divider(
-                            color: Colors.grey,
+                            color: Colors.black,
                             thickness: 1,
                             height: 2,
                           ),
