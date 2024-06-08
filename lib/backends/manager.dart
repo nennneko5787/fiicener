@@ -15,6 +15,8 @@ class Manager {
     avatarUrl: '',
     bio: "",
     circles: [],
+    isFollowing: false,
+    isMuted: false,
   );
 
   static Future<void> saveSessionToken(String? token) async {
@@ -71,6 +73,8 @@ class Manager {
         avatarUrl: "",
         bio: "ユーザーの取得に失敗しました。",
         circles: [],
+        isFollowing: false,
+        isMuted: false,
       );
     }
     final response = await http.get(
@@ -110,6 +114,16 @@ class Manager {
     var iElement = document.querySelector('div[class="introduce"]');
     String introduce = iElement?.text ?? '';
 
+    bool isFollowing = false;
+    if (response.body.contains("フォロー中")) {
+      isFollowing = true;
+    }
+
+    bool isMuted = false;
+    if (response.body.contains('<span class="link" onclick="mute(\'$userId\')">解除</span>')){
+      isMuted = true;
+    }
+
     return User(
       userName: displayName,
       userHandle: accountName,
@@ -117,6 +131,8 @@ class Manager {
       avatarUrl: iconurl,
       bio: introduce,
       circles: const [],
+      isFollowing: isFollowing,
+      isMuted: isMuted,
     );
   }
 

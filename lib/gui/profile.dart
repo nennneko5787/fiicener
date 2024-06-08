@@ -39,6 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       _circlesFuture = widget.user.getPostedCircles(page: page);
       await _circlesFuture;
+      setState(() {});
     } catch (e) {
       // エラー処理
     }
@@ -57,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Widget _buildUserInfo(User user) {
+  Widget _buildProfileUserInfo(User user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -76,6 +77,22 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         const SizedBox(height: 10),
         Text.rich(TextAgent.generate(user.bio, context)),
+      ],
+    );
+  }
+
+  Widget _buildUserInfo(Circle circle) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          circle.user.userName,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Text(
+          circle.user.userHandle,
+          style: const TextStyle(color: Colors.black),
+        ),
       ],
     );
   }
@@ -181,7 +198,37 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildUserInfo(user),
+              _buildProfileUserInfo(user),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      bool followed = await user.follow();
+                      if (followed) {
+                        setState((){});
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: user.isFollowing ? Colors.white : Colors.blue,
+                    ),
+                    child: Text(
+                      user.isFollowing ? 'フォロー解除' : 'フォロー',
+                      style: TextStyle(
+                        color: user.isFollowing ? Colors.black : Colors.white,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      bool muted = await user.mute();
+                      if (muted) {
+                        setState((){});
+                      }
+                    },
+                    icon: user.isMuted ? const Icon(Icons.volume_off) : const Icon(Icons.volume_up),
+                  ),
+                ],
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -335,7 +382,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     children: [
                                       _buildCircleAvatar(circle),
                                       const SizedBox(width: 8),
-                                      _buildUserInfo(circle.user),
+                                      _buildUserInfo(circle),
                                     ],
                                   ),
                                   const SizedBox(height: 8),

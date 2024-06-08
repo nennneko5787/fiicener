@@ -11,6 +11,8 @@ class User {
   final String avatarUrl;
   final String bio;
   final List<Circle> circles;
+  bool isFollowing = false;
+  bool isMuted = false;
 
   User({
     required this.userName,
@@ -19,6 +21,8 @@ class User {
     required this.avatarUrl,
     required this.bio,
     required this.circles,
+    required this.isFollowing,
+    required this.isMuted,
   });
 
   Future<List<User>> getFollowers() async {
@@ -262,4 +266,43 @@ class User {
     return circleslist;
   }
 
+  Future<bool> follow() async {
+    final response = await http.post(
+      Uri.parse('https://fiicen.jp/account/follow/'),
+      body: {"followed_id": userHandle},
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
+        'Cookie':
+            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
+      },
+    );
+    if (response.statusCode == 200) {
+      isFollowing = !isFollowing;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> mute() async {
+    final response = await http.post(
+      Uri.parse('https://fiicen.jp/account/mute/'),
+      body: {"muted_id": userHandle},
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
+        'Cookie':
+            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
+      },
+    );
+    if (response.statusCode == 200) {
+      isMuted = !isMuted;
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
