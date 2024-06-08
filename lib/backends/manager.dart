@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'user.dart';
 import 'circle.dart';
+import 'notification.dart';
 import 'dart:convert';
 
 class Manager {
@@ -280,6 +281,99 @@ class Manager {
 
     Map<String, dynamic> jsonMap = jsonDecode(res.body);
     return jsonMap["count"];
+  }
+
+  static Future<List<Notification>> getNotifinations() async {
+    String? session = await loadSessionToken();
+    String? csrf = await loadCsrfToken();
+
+    final response = await http.get(
+      Uri.parse('https://fiicen.jp/notification/'),
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
+      },
+    );
+
+    List<Notification> notifyList = [];
+
+    // HTMLをパースする
+    var document = htmlParser.parse(response.body);
+
+    // サークル要素をすべて取得する
+    List<dom.Element> notifications = document.querySelectorAll('.notification-item');
+
+    // 各サークルの情報を抽出する
+    for (dom.Element notify in notifications) {
+      // クラスリストを取得
+      List<String> classList = notify.classes.toList();
+
+      bool isRead = false;
+
+      // 各クラス名をチェック
+      for (var className in classList) {
+        // 正規表現でマッチ
+        if (className.contains("notification-is-read-False")) {
+          isRead = true;
+          break;
+        }
+      }
+
+      // アカウント名
+      String? accountHandleRaw = notify.querySelector('.account-name')?.attributes["onclick"];
+      RegExp regExp = RegExp(r"loadPage\('\/field\/(.*?)\/'\)");
+      Match? match = regExp.firstMatch('$accountHandleRaw');
+
+      String userId = "";
+      if (match != null) {
+        userId = match.group(1) ?? '';
+      }
+
+      NotificationTypes type = NotificationTypes.none;
+      Circle? targetCircle = null;
+
+      dom.Element? itemImage = document.querySelector('.notification-item-image');
+      String? notificationTypeIconHtml = itemImage?.innerHtml;
+      String? notificationTypeIcon = itemImage?.attributes["src"];
+
+      if (notificationTypeIcon != null) {
+        switch(notificationTypeIcon) {
+          case '/static/icon/liked.svg':
+            type = NotificationTypes.like;
+            break;
+          case '/static/icon/reply.svg':
+            type = NotificationTypes.reply;
+            break;
+          case '/static/icon/reflown.svg':
+            type = NotificationTypes.refly;
+            break;
+          case '/static/icon/follow.svg':
+            type = NotificationTypes.follow;
+            break;
+          default:
+            type = NotificationTypes.none;
+            break;
+        }
+
+        if (type == NotificationTypes.none) {
+          if (notificationTypeIconHtml != null) {
+            if (notificationTypeIconHtml.contains("@")) {
+              type = NotificationTypes.mention;
+            }
+          }
+        }
+      }
+
+      notifyList.add(Notification(
+          type: NotificationTypes.like,
+          actionUser: await Manager.getUserDetails("$userId"),
+          targetCircle: targetCircle,
+          time: "0分",
+          isRead: isRead,
+        ));
+    }
+    return notifyList;
   }
 
   static Future<bool> initialize() async {

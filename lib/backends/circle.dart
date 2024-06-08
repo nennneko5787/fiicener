@@ -245,6 +245,7 @@ class Circle {
       Uri.parse('https://fiicen.jp/circle/refly/'),
       body: {"circle_id": id},
       headers: {
+        'Content-Type': 'multipart/form-data',
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
         'X-Csrftoken': '${await Manager.loadCsrfToken()}',
@@ -265,6 +266,7 @@ class Circle {
       Uri.parse('https://fiicen.jp/circle/like/'),
       body: {"circle_id": id},
       headers: {
+        'Content-Type': 'multipart/form-data',
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
         'X-Csrftoken': '${await Manager.loadCsrfToken()}',

@@ -271,6 +271,7 @@ class User {
       Uri.parse('https://fiicen.jp/account/follow/'),
       body: {"followed_id": userHandle},
       headers: {
+        'Content-Type': 'multipart/form-data',
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
         'X-Csrftoken': '${await Manager.loadCsrfToken()}',
@@ -291,6 +292,7 @@ class User {
       Uri.parse('https://fiicen.jp/account/mute/'),
       body: {"muted_id": userHandle},
       headers: {
+        'Content-Type': 'multipart/form-data',
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
         'X-Csrftoken': '${await Manager.loadCsrfToken()}',
