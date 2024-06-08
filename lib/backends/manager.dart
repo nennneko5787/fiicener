@@ -8,7 +8,7 @@ import 'dart:convert';
 
 class Manager {
   static const storage = FlutterSecureStorage();
-  static User me = const User(
+  static User me = User(
     userName: '',
     userHandle: '',
     userID: '',
@@ -64,7 +64,7 @@ class Manager {
 
   static Future<User> getUserDetails(String userId) async {
     if (userId == "") {
-      return const User(
+      return User(
         userName: "ユーザーの取得に失敗しました。",
         userHandle: "",
         userID: "",

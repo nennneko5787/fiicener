@@ -187,7 +187,8 @@ class _CircleMenuState extends State<CircleMenu> {
               );
             } else {
               final circles = snapshot.data!;
-              return ListView.builder(
+              return Scrollbar(
+                child: ListView.builder(
                   itemCount: circles.length,
                   itemBuilder: (context, index) {
                     final circle = circles[index];
@@ -266,8 +267,8 @@ class _CircleMenuState extends State<CircleMenu> {
                                             const TextStyle(color: Colors.lightBlue)),
                                   ),
                                 ])
-                              : const SizedBox(),
-                          Text.rich(TextAgent.generate(circle.content)),
+                              : SizedBox(),
+                          Text.rich(TextAgent.generate(circle.content, context)),
                           circle.imageUrl != null
                               ? GestureDetector(
                                   onTap: () {
@@ -301,7 +302,8 @@ class _CircleMenuState extends State<CircleMenu> {
                       ),
                     );
                   },
-                );
+                )
+              );
             }
           },
         ),

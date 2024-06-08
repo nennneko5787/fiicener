@@ -280,10 +280,7 @@ class Circle {
     }
   }
 
-  Future<bool> reply({
-    required String circle,
-    required String content
-  }) async {
+  Future<bool> reply(String content) async {
     String? session = await Manager.loadSessionToken();
     String? csrf = await Manager.loadCsrfToken();
 

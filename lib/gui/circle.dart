@@ -14,16 +14,12 @@ class CircleDetailPage extends StatefulWidget {
 }
 
 class _CircleDetailPageState extends State<CircleDetailPage> {
-  void _onCommentButtonPressed() {
-    print("comment pressed");
-  }
+  final TextEditingController replyTextFieldController = TextEditingController();
 
-  void _onLikeButtonPressed() {
-    print("like pressed");
-  }
-
-  void _onRetweetButtonPressed() {
-    print("refly pressed");
+  @override
+  void dispose(){
+    replyTextFieldController.dispose();
+    super.dispose();
   }
 
   Widget _buildCircleAvatar(BuildContext context, Circle circle) {
@@ -153,7 +149,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text.rich(TextAgent.generate(widget.circle.content)),
+                  Text.rich(TextAgent.generate(widget.circle.content, context)),
                   widget.circle.imageUrl != null
                       ? GestureDetector(
                           onTap: () {
@@ -181,11 +177,45 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
               ),
             ),
             TextField(
-              keyboardType: const TextInputType.multiline,
+              controller: replyTextFieldController,
               maxLines: null,
               decoration: const InputDecoration(
                 hintText: "返信をポスト",
               ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (replyTextFieldController.text != ""){
+                  String _text = replyTextFieldController.text;
+                  replyTextFieldController.text = "";
+                  bool isPosted = await widget.circle.reply(_text);
+                  if (isPosted){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('返信がポストされました。')),
+                    );
+                  }else{
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('返信できませんでした。')),
+                    );
+                  }
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('本文は空欄であってはいけません。')),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue
+              ),
+              child: const Text(
+                'ポスト',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+              height: 2,
             ),
             FutureBuilder<List<Circle>>(
               future: widget.circle.getReplys(),
@@ -218,7 +248,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Text.rich(TextAgent.generate(c.content)),
+                            Text.rich(TextAgent.generate(c.content, context)),
                             _buildActions(c),
                             const Divider(
                               color: Colors.grey,
