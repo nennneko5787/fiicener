@@ -56,60 +56,8 @@ class Circle {
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
-      String replyedTo = user.userName;
-
-      String circleId = "";
-
-      RegExp regExp = RegExp(r"openSlidePanel\('\/circle\/(\d+)'\)");
-      var match = regExp.firstMatch(circle?.innerHtml);
-
-      // マッチした場合、(.*) の部分をリストに追加
-      if (match != null) {
-        circleId = match.group(1)!;
-      }
-
-      // アカウント名
-      String? accountName = circle.querySelector('.account-name')?.text.trim();
-      if (accountName != null) {
-        accountName = accountName.replaceAll('@', ''); // @を取り除く
-      }
-
-      // テキスト内容
-      String? textContent = circle
-          .querySelector('.circle-content > div')
-          ?.text
-          .trim();
-
-      bool liked = false;
-      if (circle.innerHtml.contains("/static/icon/liked.svg")) {
-        liked = true;
-      }
-      bool reflown = false;
-      if (circle.innerHtml.contains("reflown")) {
-        reflown = true;
-      }
-
-      /* サークル情報を出力
-      print('ユーザー名: $username');
-      print('アカウント名: $accountName');
-      print('テキスト: $textContent');
-      if (imageUrl != null) {
-        print('画像URL: $imageUrl');
-      }
-      print('---');
-      */
-      circleslist.add(Circle(
-        id: circleId,
-        user: await Manager.getUserDetails("$accountName"),
-        content: '$textContent',
-        imageUrl: null,
-        videoPoster: null,
-        videoUrl: null,
-        replyed_to: replyedTo,
-        reflew_name: null,
-        liked: liked,
-        reflown: reflown,
-      ));
+      Circle parsedCircle = await Manager.parseCircle(circle);
+      circleslist.add(parsedCircle);
     }
     return circleslist;
   }

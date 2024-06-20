@@ -19,6 +19,7 @@ class CircleMenu extends StatefulWidget {
 class _CircleMenuState extends State<CircleMenu> {
   late Future<List<Circle>> _circlesFuture;
   int _currentPage = 1; // 現在のページ番号
+  bool isReloading = false;
 
   @override
   void initState() {
@@ -33,6 +34,8 @@ class _CircleMenuState extends State<CircleMenu> {
       setState(() {});
     } catch (e) {
       // エラー処理
+    } finally {
+      isReloading = false;
     }
   }
 
@@ -46,14 +49,18 @@ class _CircleMenuState extends State<CircleMenu> {
       });
     } catch (e) {
       // エラー処理
+    } finally {
+      isReloading = false;
     }
   }
 
   Future<void> _refresh() async {
     HapticFeedback.mediumImpact();
     _currentPage = 1;
+    isReloading = true;
     await _loadCircles(_currentPage);
     await Footer.footerKey.currentState?.fetchNotificationCount();
+    isReloading = false;
   }
 
   Widget _buildCircleAvatar(Circle circle) {
@@ -165,7 +172,8 @@ class _CircleMenuState extends State<CircleMenu> {
       onRefresh: _refresh,
       child: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent && isReloading == false) {
+            isReloading = true;
             _loadMoreCircles();
           }
           return false;

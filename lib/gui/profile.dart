@@ -205,7 +205,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     onPressed: () async {
                       bool followed = await user.follow();
                       if (followed) {
-                        setState((){});
+                        if (!user.isFollowing){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('フォロー解除しました。')),
+                          );
+                        }else{
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('フォローしました')),
+                          );
+                        }
+                        setState((){
+                          user.isFollowing = !user.isFollowing;
+                        });
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -222,7 +233,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     onPressed: () async {
                       bool muted = await user.mute();
                       if (muted) {
-                        setState((){});
+                        if (!user.isMuted){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('ミュートを解除しました。')),
+                          );
+                        }else{
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('ミュートしました。')),
+                          );
+                        }
+                        setState((){
+                          user.isMuted = !user.isMuted;
+                        });
                       }
                     },
                     icon: user.isMuted ? const Icon(Icons.volume_off) : const Icon(Icons.volume_up),

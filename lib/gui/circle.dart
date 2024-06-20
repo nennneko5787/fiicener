@@ -3,6 +3,7 @@ import '../backends/circle.dart'; // Circle クラスを提供するファイル
 import '../backends/textagent.dart';
 import '../backends/circle_gui_helper.dart';
 import 'profile.dart';
+import 'footer.dart';
 
 class CircleDetailPage extends StatefulWidget {
   final Circle circle;
@@ -190,6 +191,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('返信がポストされました。')),
                           );
+                          setState(() {});
                         }else{
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('返信できませんでした。')),
@@ -272,6 +274,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
           ],
         ),
       ),
+      bottomNavigationBar: const Footer(),
     );
   }
 }

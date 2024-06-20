@@ -15,7 +15,6 @@ class Manager {
     userID: '',
     avatarUrl: '',
     bio: "",
-    circles: [],
     isFollowing: false,
     isMuted: false,
   );
@@ -73,7 +72,6 @@ class Manager {
         userID: "",
         avatarUrl: "",
         bio: "ユーザーの取得に失敗しました。",
-        circles: [],
         isFollowing: false,
         isMuted: false,
       );
@@ -116,12 +114,13 @@ class Manager {
     String introduce = iElement?.text ?? '';
 
     bool isFollowing = false;
-    if (response.body.contains("フォロー中")) {
+    dom.Element? isfol = document.querySelector("do-follow");
+    if (isfol?.attributes["style"] == "display: none;") {
       isFollowing = true;
     }
 
     bool isMuted = false;
-    if (response.body.contains('<span class="link" onclick="mute(\'$userId\')">解除</span>')){
+    if (response.body.contains('<div style="color: var(--sub-letter-color)">このアカウントをミュートしています。')){
       isMuted = true;
     }
 
@@ -131,9 +130,77 @@ class Manager {
       userID: accountNum,
       avatarUrl: iconurl,
       bio: introduce,
-      circles: const [],
       isFollowing: isFollowing,
       isMuted: isMuted,
+    );
+  }
+
+  static Future<Circle> parseCircle(dom.Element circle) async {
+    List<String> classList = circle.classes.toList();
+    String circleId = '';
+
+    for (var className in classList) {
+      RegExp regExp = RegExp(r'^circle_(.*)$');
+      var match = regExp.firstMatch(className);
+      if (match != null) {
+        circleId = match.group(1)!;
+        break;
+      }
+    }
+
+    String? accountName = circle.querySelector('.account-name')?.text.trim();
+    if (accountName != null) {
+      accountName = accountName.replaceAll('@', ''); // Remove '@'
+    }
+    User user = await getUserDetails(accountName!);
+
+    String? textContent = circle
+        .querySelector('.circle-content > div:not(.reply-to)')
+        ?.text
+        .trim();
+    if (textContent == null) {
+      textContent = '';
+    }
+
+    String? imageUrlRaw = circle.querySelector('.attached-image')?.attributes['src'];
+    String imageUrl = imageUrlRaw != null ? 'https://fiicen.jp$imageUrlRaw' : '';
+
+    String? videoPoster = circle.querySelector('.attached-video')?.attributes['poster'];
+    if (videoPoster != null) {
+      videoPoster = 'https://fiicen.jp$videoPoster';
+    }
+    String? videoUrl = videoPoster != null ? 'https://fiicen.jp/media/attached_video/$circleId.mp4' : '';
+
+    String? replyedTo;
+    String? replyHTML = circle.querySelector('.reply-to')?.innerHtml;
+    if (replyHTML != null) {
+      RegExp regExp = RegExp(r'\/field\/(.*?)\/');
+      var match = regExp.firstMatch(replyHTML);
+      replyedTo = match != null ? match.group(1)! : '';
+    }
+
+    String? reflewName;
+    String? reflewNameHTML = circle.querySelector('.reflew-display-name')?.innerHtml;
+    if (reflewNameHTML != null) {
+      RegExp regExp = RegExp(r'\/field\/(.*?)\/');
+      var match = regExp.firstMatch(reflewNameHTML);
+      reflewName = match != null ? match.group(1)! : '';
+    }
+
+    bool liked = circle.innerHtml.contains("/static/icon/liked.svg");
+    bool reflown = circle.innerHtml.contains("reflown");
+
+    return Circle(
+      id: circleId,
+      user: user,
+      content: textContent,
+      imageUrl: imageUrl,
+      videoPoster: videoPoster,
+      videoUrl: videoUrl,
+      replyed_to: replyedTo,
+      reflew_name: reflewName,
+      liked: liked,
+      reflown: reflown,
     );
   }
 
@@ -150,121 +217,20 @@ class Manager {
       },
     );
 
-    List<Circle> circleslist = [];
-
-    // HTMLをパースする
     var document = htmlParser.parse(response.body);
-
-    // サークル要素をすべて取得する
     List<dom.Element> circles = document.querySelectorAll('.circle');
 
-    // 各サークルの情報を抽出する
-    for (dom.Element circle in circles) {
-      // クラスリストを取得
-      List<String> classList = circle.classes.toList();
+    List<Circle> circleslist = [];
 
-      String circleId = "";
-
-      // 各クラス名をチェック
-      for (var className in classList) {
-        // 正規表現でマッチ
-        RegExp regExp = RegExp(r'^circle_(.*)$');
-        var match = regExp.firstMatch(className);
-
-        // マッチした場合、(.*) の部分をリストに追加
-        if (match != null) {
-          circleId = match.group(1)!;
-        }
-      }
-
-      // アカウント名
-      String? accountName = circle.querySelector('.account-name')?.text.trim();
-      if (accountName != null) {
-        accountName = accountName.replaceAll('@', ''); // @を取り除く
-      }
-
-      // テキスト内容
-      String? textContent = circle
-          .querySelector('.circle-content > div:not(.reply-to)')
-          ?.text
-          .trim();
-      if (textContent == null) {
-        continue;
-      }
-
-      // 添付画像URL (存在する場合)
-      String? imageUrlRaw =
-          circle.querySelector('.attached-image')?.attributes['src'];
-
-      String imageUrl = 'https://fiicen.jp$imageUrlRaw';
-
-      String? videoPoster =
-          circle.querySelector('.attached-video')?.attributes['poster'];
-      String? videoUrl;
-      if (videoPoster != null) {
-        videoUrl = 'https://fiicen.jp/media/attached_video/$circleId.mp4';
-      }
-
-      String? replyedTo;
-      String? replyHTML = circle.querySelector('.reply-to')?.innerHtml;
-      if (replyHTML != null) {
-        // 正規表現でマッチ
-        RegExp regExp = RegExp(r'\/field\/(.*?)\/');
-        var match = regExp.firstMatch(replyHTML);
-
-        // マッチした場合、(.*) の部分をリストに追加
-        if (match != null) {
-          replyedTo = match.group(1)!;
-        }
-      }
-
-      String? reflewName;
-      String? reflewNameHTML =
-          circle.querySelector('.reflew-display-name')?.innerHtml;
-      if (reflewNameHTML != null) {
-        // 正規表現でマッチ
-        RegExp regExp = RegExp(r'\/field\/(.*?)\/');
-        var match = regExp.firstMatch(reflewNameHTML);
-
-        // マッチした場合、(.*) の部分をリストに追加
-        if (match != null) {
-          reflewName = match.group(1)!;
-        }
-      }
-
-      bool liked = false;
-      if (circle.innerHtml.contains("/static/icon/liked.svg")) {
-        liked = true;
-      }
-      bool reflown = false;
-      if (circle.innerHtml.contains("reflown")) {
-        reflown = true;
-      }
-
-      /* サークル情報を出力
-      print('ユーザー名: $username');
-      print('アカウント名: $accountName');
-      print('テキスト: $textContent');
-      if (imageUrl != null) {
-        print('画像URL: $imageUrl');
-      }
-      print('---');
-      */
-      circleslist.add(Circle(
-          id: circleId,
-          user: await getUserDetails("$accountName"),
-          content: textContent,
-          imageUrl: imageUrl,
-          videoPoster: videoPoster,
-          videoUrl: videoUrl,
-          replyed_to: replyedTo,
-          reflew_name: reflewName,
-          liked: liked,
-          reflown: reflown
-        ));
+    // Asynchronously parse each circle
+    for (var circle in circles) {
+      Circle parsedCircle = await parseCircle(circle);
+      circleslist.add(parsedCircle);
     }
+
     return circleslist;
   }
+
 
   static Future<int> getNotificationCount() async {
     String? session = await loadSessionToken();

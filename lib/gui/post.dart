@@ -108,7 +108,7 @@ class _PostMenu extends State<PostMenu> {
           // 投稿が成功した場合、タイムライン画面に遷移
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Post posted!')),
+            const SnackBar(content: Text('サークルがポストされました。')),
           );
           _postController.clear();
           setState(() {
@@ -117,7 +117,7 @@ class _PostMenu extends State<PostMenu> {
         } else {
           // 投稿が失敗した場合のエラーメッセージを表示
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to post: ${response.statusCode}')),
+            SnackBar(content: Text('サークルのポストに失敗しました: ${response.statusCode}')),
           );
         }
       } catch (e) {

@@ -10,7 +10,6 @@ class User {
   final String userID;
   final String avatarUrl;
   final String bio;
-  final List<Circle> circles;
   bool isFollowing = false;
   bool isMuted = false;
 
@@ -20,7 +19,6 @@ class User {
     required this.userID,
     required this.avatarUrl,
     required this.bio,
-    required this.circles,
     required this.isFollowing,
     required this.isMuted,
   });
@@ -159,109 +157,9 @@ class User {
     List<dom.Element> circles = document.querySelectorAll('.circle');
 
     // 各サークルの情報を抽出する
-    for (dom.Element circle in circles) {
-      // クラスリストを取得
-      List<String> classList = circle.classes.toList();
-
-      String circleId = "";
-
-      // 各クラス名をチェック
-      for (var className in classList) {
-        // 正規表現でマッチ
-        RegExp regExp = RegExp(r'^circle_(.*)$');
-        var match = regExp.firstMatch(className);
-
-        // マッチした場合、(.*) の部分をリストに追加
-        if (match != null) {
-          circleId = match.group(1)!;
-        }
-      }
-
-      // アカウント名
-      String? accountName = circle.querySelector('.account-name')?.text.trim();
-      if (accountName != null) {
-        accountName = accountName.replaceAll('@', ''); // @を取り除く
-      }
-
-      // テキスト内容
-      String? textContent = circle
-          .querySelector('.circle-content > div:not(.reply-to)')
-          ?.text
-          .trim();
-      if (textContent == null) {
-        continue;
-      }
-
-      // 添付画像URL (存在する場合)
-      String? imageUrlRaw =
-          circle.querySelector('.attached-image')?.attributes['src'];
-
-      String imageUrl = 'https://fiicen.jp$imageUrlRaw';
-
-      String? videoPoster =
-          circle.querySelector('.attached-video')?.attributes['poster'];
-      String? videoUrl;
-      if (videoPoster != null) {
-        videoUrl = 'https://fiicen.jp/media/attached_video/$circleId.mp4';
-      }
-
-      String? replyedTo;
-      String? replyHTML = circle.querySelector('.reply-to')?.innerHtml;
-      if (replyHTML != null) {
-        // 正規表現でマッチ
-        RegExp regExp = RegExp(r'\/field\/(.*?)\/');
-        var match = regExp.firstMatch(replyHTML);
-
-        // マッチした場合、(.*) の部分をリストに追加
-        if (match != null) {
-          replyedTo = match.group(1)!;
-        }
-      }
-
-      String? reflewName;
-      String? reflewNameHTML =
-          circle.querySelector('.reflew-display-name')?.innerHtml;
-      if (reflewNameHTML != null) {
-        // 正規表現でマッチ
-        RegExp regExp = RegExp(r'\/field\/(.*?)\/');
-        var match = regExp.firstMatch(reflewNameHTML);
-
-        // マッチした場合、(.*) の部分をリストに追加
-        if (match != null) {
-          reflewName = match.group(1)!;
-        }
-      }
-
-      bool liked = false;
-      if (circle.innerHtml.contains("/static/icon/liked.svg")) {
-        liked = true;
-      }
-      bool reflown = false;
-      if (circle.innerHtml.contains("reflown")) {
-        reflown = true;
-      }
-
-      /* サークル情報を出力
-      print('ユーザー名: $username');
-      print('アカウント名: $accountName');
-      print('テキスト: $textContent');
-      if (imageUrl != null) {
-        print('画像URL: $imageUrl');
-      }
-      print('---');
-      */
-      circleslist.add(Circle(
-          id: circleId,
-          user: await Manager.getUserDetails("$accountName"),
-          content: textContent,
-          imageUrl: imageUrl,
-          videoPoster: videoPoster,
-          videoUrl: videoUrl,
-          replyed_to: replyedTo,
-          reflew_name: reflewName,
-          liked: liked,
-          reflown: reflown
-        ));
+    for (var circle in circles) {
+      Circle parsedCircle = await Manager.parseCircle(circle);
+      circleslist.add(parsedCircle);
     }
     return circleslist;
   }
