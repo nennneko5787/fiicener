@@ -152,7 +152,7 @@ class Manager {
     if (accountName != null) {
       accountName = accountName.replaceAll('@', ''); // Remove '@'
     }
-    User user = await getUserDetails(accountName!);
+    User user = await getUserDetails("${accountName}");
 
     String? textContent = circle
         .querySelector('.circle-content > div:not(.reply-to)')
