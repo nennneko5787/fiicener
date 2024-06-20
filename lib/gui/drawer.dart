@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../backends/manager.dart';
 import 'login.dart';
 import 'profile.dart';
+import '../backends/textagent.dart';
 
 class DrawerMenu extends StatefulWidget {
   const DrawerMenu({super.key});
@@ -78,6 +79,28 @@ class _DrawerMenuState extends State<DrawerMenu> {
             title: const Text('設定', style: TextStyle(fontSize: 13)),
             onTap: () {
               // サイドメニューアイテム2がタップされたときの処理
+            },
+          ),
+          ListTile(
+            title: const Text('Fiicener について', style: TextStyle(fontSize: 13)),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Fiicenerについて'),
+                    content: Text.rich(TextAgent.generate("プログラム書いてる人: @nennneko5787\nFiicen by: @Fiicener\n\nGithub repository: https://github.com/nennneko5787/fiicener", context)),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
           ListTile(

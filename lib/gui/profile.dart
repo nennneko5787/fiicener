@@ -217,6 +217,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         setState((){
                           user.isFollowing = !user.isFollowing;
                         });
+                      }else{
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('操作に失敗しました。')),
+                          );
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -245,6 +249,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         setState((){
                           user.isMuted = !user.isMuted;
                         });
+                      }else{
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('操作に失敗しました。')),
+                          );
                       }
                     },
                     icon: user.isMuted ? const Icon(Icons.volume_off) : const Icon(Icons.volume_up),
