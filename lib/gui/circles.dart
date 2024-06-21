@@ -20,6 +20,7 @@ class _CircleMenuState extends State<CircleMenu> {
   late Future<List<Circle>> _circlesFuture;
   int _currentPage = 1; // 現在のページ番号
   bool isReloading = false;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -196,120 +197,126 @@ class _CircleMenuState extends State<CircleMenu> {
             } else {
               final circles = snapshot.data!;
               return Scrollbar(
-                child: ListView.builder(
-                  itemCount: circles.length,
-                  itemBuilder: (context, index) {
-                    final circle = circles[index];
-                    return ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          circle.reflew_name != null
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Center(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Row(children: [
-                                            GestureDetector(
-                                              onTap: () async {
-                                                User user = await Manager
-                                                    .getUserDetails(
-                                                        '${circle.reflew_name}');
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ProfilePage(
-                                                              user: user)),
-                                                );
-                                              },
-                                              child: Text(
-                                                  '@${circle.reflew_name}',
-                                                  style: const TextStyle(
-                                                      color: Colors.lightBlue)),
-                                            ),
-                                            const Text(
-                                              ' がリポストしました',
-                                            ),
-                                          ]),
-                                          const Icon(Icons.repeat),
-                                        ],
+                controller: _scrollController,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                    itemCount: circles.length,
+                    itemBuilder: (context, index) {
+                      final circle = circles[index];
+                      return ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            circle.reflew_name != null
+                                ? Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Row(children: [
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  User user = await Manager
+                                                      .getUserDetails(
+                                                          '${circle.reflew_name}');
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ProfilePage(
+                                                                user: user)),
+                                                  );
+                                                },
+                                                child: Text(
+                                                    '@${circle.reflew_name}',
+                                                    style: const TextStyle(
+                                                        color: Colors.lightBlue)),
+                                              ),
+                                              const Text(
+                                                ' がリポストしました',
+                                              ),
+                                            ]),
+                                            const Icon(Icons.repeat),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    const Divider(
-                                      color: Colors.black,
-                                      thickness: 1,
-                                      height: 2,
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox(),
-                          Row(
-                            children: [
-                              _buildCircleAvatar(circle),
-                              const SizedBox(width: 8),
-                              _buildUserInfo(circle),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          circle.reflew_name != null
-                              ? Row(children: [
-                                  const Text('返信先: '),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      User user = await Manager.getUserDetails(
-                                          '${circle.reflew_name}');
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ProfilePage(user: user)),
-                                      );
-                                    },
-                                    child: Text('@${circle.reflew_name}',
-                                        style:
-                                            const TextStyle(color: Colors.lightBlue)),
-                                  ),
-                                ])
-                              : SizedBox(),
-                          Text.rich(TextAgent.generate(circle.content, context)),
-                          circle.imageUrl != null
-                              ? GestureDetector(
-                                  onTap: () {
-                                    CircleGuiHelper.showPreviewImage(context, image: circle.imageUrl);
-                                  },
-                                  child: FittedBox(
-                                    fit: BoxFit.contain,
-                                    child: Image.network('${circle.imageUrl}'),
+                                      const Divider(
+                                        color: Colors.black,
+                                        thickness: 1,
+                                        height: 2,
+                                      ),
+                                    ],
                                   )
-                              )
-                              : const SizedBox(),
-                          circle.videoPoster != null
-                              ? FittedBox(
-                                  fit: BoxFit.contain,
-                                  child: Image.network('${circle.videoPoster}'),
+                                : const SizedBox(),
+                            Row(
+                              children: [
+                                _buildCircleAvatar(circle),
+                                const SizedBox(width: 8),
+                                _buildUserInfo(circle),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            circle.reflew_name != null
+                                ? Row(children: [
+                                    const Text('返信先: '),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        User user = await Manager.getUserDetails(
+                                            '${circle.reflew_name}');
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ProfilePage(user: user)),
+                                        );
+                                      },
+                                      child: Text('@${circle.reflew_name}',
+                                          style:
+                                              const TextStyle(color: Colors.lightBlue)),
+                                    ),
+                                  ])
+                                : SizedBox(),
+                            Text.rich(TextAgent.generate(circle.content, context)),
+                            circle.imageUrl != null
+                                ? GestureDetector(
+                                    onTap: () {
+                                      CircleGuiHelper.showPreviewImage(context, image: circle.imageUrl);
+                                    },
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Image.network('${circle.imageUrl}'),
+                                    )
                                 )
-                              : const SizedBox(),
-                          _buildActions(circle),
-                          const Divider(
-                            color: Colors.black,
-                            thickness: 1,
-                            height: 2,
-                          ),
-                        ],
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                CircleDetailPage(circle: circle)),
-                      ),
-                    );
-                  },
+                                : const SizedBox(),
+                            circle.videoPoster != null
+                                ? FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: Image.network('${circle.videoPoster}'),
+                                  )
+                                : const SizedBox(),
+                            _buildActions(circle),
+                            const Divider(
+                              color: Colors.black,
+                              thickness: 1,
+                              height: 2,
+                            ),
+                          ],
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CircleDetailPage(circle: circle)),
+                        ),
+                      );
+                    },
+                  )
                 )
               );
             }

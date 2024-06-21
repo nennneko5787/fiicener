@@ -34,6 +34,12 @@ class MyApp extends StatelessWidget {
               theme: ThemeData(
                 primarySwatch: Colors.blue,
               ),
+              darkTheme: ThemeData(
+                brightness: Brightness.dark,
+                colorScheme: const ColorScheme.dark(
+                  primary: Colors.deepPurple,
+                ),
+              ),
               home: home,
             );
           }
