@@ -173,6 +173,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                           )
                         : const SizedBox(),
                     _buildActions(widget.circle),
+                    Text("サークルID: ${widget.circle.id}"),
                     const Divider(
                       color: Colors.black,
                       thickness: 1,

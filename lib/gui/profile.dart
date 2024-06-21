@@ -203,24 +203,31 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
-                      bool followed = await user.follow();
-                      if (followed) {
-                        if (!user.isFollowing){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('フォロー解除しました。')),
-                          );
+                      try{
+                        bool followed = await user.follow();
+                        if (followed) {
+                          if (!user.isFollowing){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('フォロー解除しました。')),
+                            );
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('フォローしました')),
+                            );
+                          }
+                          setState((){
+                            user.isFollowing = !user.isFollowing;
+                          });
                         }else{
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('フォローしました')),
-                          );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('操作に失敗しました。')),
+                            );
                         }
-                        setState((){
-                          user.isFollowing = !user.isFollowing;
-                        });
-                      }else{
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('操作に失敗しました。')),
-                          );
+                      } catch (e) {
+                        // エラーが発生した場合の処理
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('操作に失敗しました。')),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -235,24 +242,31 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   IconButton(
                     onPressed: () async {
-                      bool muted = await user.mute();
-                      if (muted) {
-                        if (!user.isMuted){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('ミュートを解除しました。')),
-                          );
+                      try{
+                        bool muted = await user.mute();
+                        if (muted) {
+                          if (!user.isMuted){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('ミュートを解除しました。')),
+                            );
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('ミュートしました。')),
+                            );
+                          }
+                          setState((){
+                            user.isMuted = !user.isMuted;
+                          });
                         }else{
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('ミュートしました。')),
-                          );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('操作に失敗しました。')),
+                            );
                         }
-                        setState((){
-                          user.isMuted = !user.isMuted;
-                        });
-                      }else{
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('操作に失敗しました。')),
-                          );
+                      } catch (e) {
+                        // エラーが発生した場合の処理
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('操作に失敗しました。')),
+                        );
                       }
                     },
                     icon: user.isMuted ? const Icon(Icons.volume_off) : const Icon(Icons.volume_up),

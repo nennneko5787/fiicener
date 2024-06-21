@@ -86,7 +86,7 @@ class _CircleMenuState extends State<CircleMenu> {
         ),
         Text(
           circle.user.userHandle,
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.black38),
         ),
       ],
     );
@@ -139,7 +139,7 @@ class _CircleMenuState extends State<CircleMenu> {
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.repeat),
-                color: circle.reflown ? Colors.green : Colors.black,
+                color: circle.reflown ? Colors.green : Colors.white54,
                 onPressed: () async {
                   bool reflown = await circle.refly();
                   if (reflown) {
@@ -150,7 +150,7 @@ class _CircleMenuState extends State<CircleMenu> {
               Text(snapshot.data![1].toString()),
               const SizedBox(width: 16),
               IconButton(
-                color: circle.liked ? Colors.pink : Colors.black,
+                color: circle.liked ? Colors.pink : Colors.white54,
                 icon: circle.liked ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
                 onPressed: () async {
                   bool liked = await circle.like();
@@ -201,8 +201,8 @@ class _CircleMenuState extends State<CircleMenu> {
                 child: SingleChildScrollView(
                   controller: _scrollController,
                   child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: circles.length,
                     itemBuilder: (context, index) {
                       final circle = circles[index];
