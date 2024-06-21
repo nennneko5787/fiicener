@@ -3,6 +3,7 @@ import 'package:html/dom.dart' as dom;
 import "circle.dart";
 import "manager.dart";
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class User {
   final String userName;
@@ -137,7 +138,7 @@ class User {
     String? session = await Manager.loadSessionToken();
     String? csrf = await Manager.loadCsrfToken();
 
-    final _user = userHandle;
+    final _user = userID;
 
     final response = await http.get(
       Uri.parse('https://fiicen.jp/circle/block/field/$_user/$page/'),
@@ -158,8 +159,10 @@ class User {
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
-      Circle parsedCircle = await Manager.parseCircle(circle);
-      circleslist.add(parsedCircle);
+      Circle? parsedCircle = await Manager.parseCircle(circle);
+      if (parsedCircle != null) {
+        circleslist.add(parsedCircle);
+      }
     }
     return circleslist;
   }
@@ -167,7 +170,7 @@ class User {
   Future<bool> follow() async {
     final response = await http.post(
       Uri.parse('https://fiicen.jp/account/follow/'),
-      body: {"followed_id": userHandle},
+      body: {"followed_id": userID},
       headers: {
         'Content-Type': 'multipart/form-data',
         'User-Agent':
@@ -178,7 +181,12 @@ class User {
       },
     );
     if (response.statusCode == 200) {
-      isFollowing = !isFollowing;
+      var data = jsonDecode(response.body);
+      if (data["result"] == "followed") {
+        isFollowing = true;
+      }else{
+        isFollowing = false;
+      }
       return true;
     } else {
       return false;
@@ -188,7 +196,7 @@ class User {
   Future<bool> mute() async {
     final response = await http.post(
       Uri.parse('https://fiicen.jp/account/mute/'),
-      body: {"muted_id": userHandle},
+      body: {"muted_id": userID},
       headers: {
         'Content-Type': 'multipart/form-data',
         'User-Agent':

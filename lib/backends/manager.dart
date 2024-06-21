@@ -114,7 +114,7 @@ class Manager {
     String introduce = iElement?.text ?? '';
 
     bool isFollowing = false;
-    dom.Element? isfol = document.querySelector("do-follow");
+    dom.Element? isfol = document.querySelector(".do-follow");
     if (isfol?.attributes["style"] == "display: none;") {
       isFollowing = true;
     }
@@ -135,22 +135,31 @@ class Manager {
     );
   }
 
-  static Future<Circle> parseCircle(dom.Element circle) async {
+  static Future<Circle?> parseCircle(dom.Element circle) async {
     List<String> classList = circle.classes.toList();
     String circleId = '';
 
     for (var className in classList) {
-      RegExp regExp = RegExp(r'^circle_(.*)$');
+      RegExp regExp = RegExp(r'circle_(.*)');
       var match = regExp.firstMatch(className);
       if (match != null) {
         circleId = match.group(1)!;
         break;
       }
     }
+    if (circleId == "") {
+      RegExp regExp = RegExp(r"openSlidePanel('/circle/(.*)/')");
+      var match = regExp.firstMatch(circle.innerHtml);
+      if (match != null) {
+        circleId = match.group(1)!;
+      }
+    }
 
     String? accountName = circle.querySelector('.account-name')?.text.trim();
     if (accountName != null) {
       accountName = accountName.replaceAll('@', ''); // Remove '@'
+    }else{
+      return null;
     }
     User user = await getUserDetails("${accountName}");
 
@@ -224,8 +233,10 @@ class Manager {
 
     // Asynchronously parse each circle
     for (var circle in circles) {
-      Circle parsedCircle = await parseCircle(circle);
-      circleslist.add(parsedCircle);
+      Circle? parsedCircle = await parseCircle(circle);
+      if (parsedCircle != null) {
+        circleslist.add(parsedCircle);
+      }
     }
 
     return circleslist;

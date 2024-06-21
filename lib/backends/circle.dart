@@ -56,8 +56,10 @@ class Circle {
 
     // 各サークルの情報を抽出する
     for (var circle in circles) {
-      Circle parsedCircle = await Manager.parseCircle(circle);
-      circleslist.add(parsedCircle);
+      Circle? parsedCircle = await Manager.parseCircle(circle);
+      if (parsedCircle != null) {
+        circleslist.add(parsedCircle);
+      }
     }
     return circleslist;
   }
