@@ -1,10 +1,10 @@
 import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as dom;
-import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'user.dart';
 import 'circle.dart';
 import 'notification.dart';
+import 'network.dart';
 import 'dart:convert';
 
 class Manager {
@@ -44,13 +44,8 @@ class Manager {
     String? session = await loadSessionToken();
     String? csrf = await loadCsrfToken();
 
-    final homeres = await http.get(
+    final homeres = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/home/'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
-      },
     );
 
     RegExp regExp = RegExp(r"loadPage\('\/field\/(.*?)\/'\)");
@@ -76,14 +71,8 @@ class Manager {
         isMuted: false,
       );
     }
-    final response = await http.get(
+    final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/field/$userId/'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await loadSessionToken()}; csrftoken=${await loadCsrfToken()};',
-      },
     );
 
     RegExp regExp =
@@ -217,13 +206,8 @@ class Manager {
     String? session = await loadSessionToken();
     String? csrf = await loadCsrfToken();
 
-    final response = await http.get(
+    final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/block/home/$page/'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
-      },
     );
 
     var document = htmlParser.parse(response.body);
@@ -247,13 +231,8 @@ class Manager {
     String? session = await loadSessionToken();
     String? csrf = await loadCsrfToken();
 
-    final res = await http.get(
+    final res = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/notification/count/'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
-      },
     );
 
     Map<String, dynamic> jsonMap = jsonDecode(res.body);
@@ -264,13 +243,8 @@ class Manager {
     String? session = await loadSessionToken();
     String? csrf = await loadCsrfToken();
 
-    final response = await http.get(
+    final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/notification/'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
-      },
     );
 
     List<Notification> notifyList = [];

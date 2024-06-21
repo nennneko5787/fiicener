@@ -2,7 +2,7 @@ import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as dom;
 import "circle.dart";
 import "manager.dart";
-import 'package:http/http.dart' as http;
+import 'network.dart';
 import 'dart:convert';
 
 class User {
@@ -25,15 +25,9 @@ class User {
   });
 
   Future<List<User>> getFollowers() async {
-    final followersRes = await http.get(
+    final followersRes = await HttpWrapper.get(
       Uri.parse(
           'https://fiicen.jp/account/followers/?account_id=$userID'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
-      },
     );
 
     // 抽出したい部分にマッチする正規表現
@@ -61,15 +55,9 @@ class User {
   }
 
   Future<int> getFollowersCount() async {
-    final followersRes = await http.get(
+    final followersRes = await HttpWrapper.get(
       Uri.parse(
           'https://fiicen.jp/account/followers/?account_id=$userID'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
-      },
     );
 
     // 抽出したい部分にマッチする正規表現
@@ -80,15 +68,9 @@ class User {
   }
 
   Future<List<User>> getFollowing() async {
-    final followingRes = await http.get(
+    final followingRes = await HttpWrapper.get(
       Uri.parse(
           'https://fiicen.jp/account/following/?account_id=$userID'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
-      },
     );
 
     // 抽出したい部分にマッチする正規表現
@@ -116,15 +98,9 @@ class User {
   }
 
   Future<int> getFollowingCount() async {
-    final followingRes = await http.get(
+    final followingRes = await HttpWrapper.get(
       Uri.parse(
           'https://fiicen.jp/account/following/?account_id=$userID'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
-      },
     );
 
     // 抽出したい部分にマッチする正規表現
@@ -140,13 +116,8 @@ class User {
 
     final _user = userID;
 
-    final response = await http.get(
+    final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/block/field/$_user/$page/'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
-      },
     );
 
     List<Circle> circleslist = [];
@@ -168,16 +139,11 @@ class User {
   }
 
   Future<bool> follow() async {
-    final response = await http.post(
+    final response = await HttpWrapper.post(
       Uri.parse('https://fiicen.jp/account/follow/'),
       body: {"followed_id": userID},
       headers: {
         'Content-Type': 'multipart/form-data',
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
       },
     );
     if (response.statusCode == 200) {
@@ -194,16 +160,11 @@ class User {
   }
 
   Future<bool> mute() async {
-    final response = await http.post(
+    final response = await HttpWrapper.post(
       Uri.parse('https://fiicen.jp/account/mute/'),
       body: {"muted_id": userID},
       headers: {
         'Content-Type': 'multipart/form-data',
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
       },
     );
     if (response.statusCode == 200) {
