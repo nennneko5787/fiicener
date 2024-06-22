@@ -3,6 +3,7 @@ import "user.dart";
 import 'reporttype.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:http/http.dart' as http;
+import 'network.dart';
 
 class Circle {
   final String id;
@@ -30,16 +31,8 @@ class Circle {
   });
 
   Future<List<Circle>> getReplys() async {
-    String? session = await Manager.loadSessionToken();
-    String? csrf = await Manager.loadCsrfToken();
-
-    final response = await http.get(
+    final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/$id/'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
-      },
     );
 
     List<Circle> circleslist = [];
@@ -68,13 +61,8 @@ class Circle {
     String? session = await Manager.loadSessionToken();
     String? csrf = await Manager.loadCsrfToken();
 
-    final response = await http.get(
-      Uri.parse('https://fiicen.jp/circle/$id/'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie': 'sessionid=$session; csrftoken=$csrf;',
-      },
+    final response = await HttpWrapper.get(
+      Uri.parse('https://fiicen.jp/circle/$id/')
     );
     // HTMLをパースする
     var document = htmlParser.parse(response.body);
@@ -85,14 +73,8 @@ class Circle {
   }
 
   Future<List<User>> getReflyUsers() async {
-    final reflysRes = await http.get(
+    final reflysRes = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=$id'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
-      },
     );
 
     // 抽出したい部分にマッチする正規表現
@@ -120,14 +102,8 @@ class Circle {
   }
 
   Future<int> getReflyUsersCount() async {
-    final reflysRes = await http.get(
+    final reflysRes = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/reflys/?circle_id=$id'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
-      },
     );
 
     // 抽出したい部分にマッチする正規表現
@@ -138,14 +114,8 @@ class Circle {
   }
 
   Future<List<User>> getLikedUsers() async {
-    final likesRes = await http.get(
+    final likesRes = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/likes/?circle_id=$id'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
-      },
     );
 
     // 抽出したい部分にマッチする正規表現
@@ -173,14 +143,8 @@ class Circle {
   }
 
   Future<int> getLikedUsersCount() async {
-    final likesRes = await http.get(
+    final likesRes = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/likes/?circle_id=$id'),
-      headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
-      },
     );
 
     // 抽出したい部分にマッチする正規表現
@@ -191,16 +155,11 @@ class Circle {
   }
 
   Future<bool> refly() async {
-    final response = await http.post(
+    final response = await HttpWrapper.post(
       Uri.parse('https://fiicen.jp/circle/refly/'),
       body: {"circle_id": id},
       headers: {
         'Content-Type': 'multipart/form-data',
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
       },
     );
     if (response.statusCode == 200) {
@@ -212,16 +171,11 @@ class Circle {
   }
 
   Future<bool> like() async {
-    final response = await http.post(
+    final response = await HttpWrapper.post(
       Uri.parse('https://fiicen.jp/circle/like/'),
       body: {"circle_id": id},
       headers: {
         'Content-Type': 'multipart/form-data',
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
       },
     );
     if (response.statusCode == 200) {
@@ -256,15 +210,11 @@ class Circle {
   }
 
   Future<bool> report(ReportTypes type) async {
-    final response = await http.post(
+    final response = await HttpWrapper.post(
       Uri.parse('https://fiicen.jp/report/circle/${id}/'),
       body: {"type": type.name},
       headers: {
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'X-Csrftoken': '${await Manager.loadCsrfToken()}',
-        'Cookie':
-            'sessionid=${await Manager.loadSessionToken()}; csrftoken=${await Manager.loadCsrfToken()};',
+        'Content-Type': 'multipart/form-data',
       },
     );
 

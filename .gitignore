@@ -45,3 +45,7 @@ app.*.map.json
 
 !*/.gitignore
 .gradle
+android/gradlew
+android/gradlew.bat
+android/local.properties
+windows/flutter/ephemeral/generated_config.cmake
