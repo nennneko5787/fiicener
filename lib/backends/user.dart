@@ -111,10 +111,7 @@ class User {
   }
 
   Future<List<Circle>> getPostedCircles({int page = 1}) async {
-    String? session = await Manager.loadSessionToken();
-    String? csrf = await Manager.loadCsrfToken();
-
-    final _user = userID;
+    final _user = userHandle.replaceFirst('@', '');
 
     final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/block/field/$_user/$page/'),
