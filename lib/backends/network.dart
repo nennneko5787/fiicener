@@ -54,14 +54,17 @@ class HttpWrapper {
       final random = Random.secure();
       final randomStr =  List.generate(8, (_) => charset[random.nextInt(charset.length)]).join();
 
-      final boundary = '--UNOFFICIALFIICENER$randomStr';
+      final boundary = 'UNOFFICIALFIICENER$randomStr';
       allheaders['Content-Type'] = 'multipart/form-data; boundary=$boundary';
       data = '';
       for (String key in body.keys) {
-        data += '$boundary\r\nContent-Disposition: form-data; name="$key"\r\n\r\n${body[key]}\r\n';
+        data += '--$boundary\r\nContent-Disposition: form-data; name="$key"\r\n\r\n${body[key]}\r\n';
       }
-      data += '$boundary--';
+      data += '--$boundary--';
     }
+
+    print(allheaders);
+    print(data);
 
     final response = await http.post(
       url,

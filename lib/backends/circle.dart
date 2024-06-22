@@ -210,7 +210,7 @@ class Circle {
   }
 
   Future<bool> report(ReportTypes type) async {
-    final response = await http.post(
+    final response = await HttpWrapper.post(
       Uri.parse('https://fiicen.jp/report/circle/${id}/'),
       body: {"type": type.name},
       headers: {

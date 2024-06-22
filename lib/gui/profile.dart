@@ -215,9 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               const SnackBar(content: Text('フォローしました')),
                             );
                           }
-                          setState((){
-                            user.isFollowing = !user.isFollowing;
-                          });
+                          setState((){});
                         }else{
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('操作に失敗しました。')),
@@ -254,9 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               const SnackBar(content: Text('ミュートしました。')),
                             );
                           }
-                          setState((){
-                            user.isMuted = !user.isMuted;
-                          });
+                          setState((){});
                         }else{
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('操作に失敗しました。')),

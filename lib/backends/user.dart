@@ -146,14 +146,11 @@ class User {
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       if (data["result"] == "followed") {
-        isFollowing = true;
-      }else{
-        isFollowing = false;
+        isFollowing = !isFollowing;
+        return true;
       }
-      return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   Future<bool> mute() async {
@@ -165,10 +162,12 @@ class User {
       },
     );
     if (response.statusCode == 200) {
-      isMuted = !isMuted;
-      return true;
-    } else {
-      return false;
+      var data = jsonDecode(response.body);
+      if (data["result"] == "muted") {
+        isMuted = !isMuted;
+        return true;
+      }
     }
+    return false;
   }
 }
