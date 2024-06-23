@@ -134,7 +134,7 @@ class Manager {
       }
     }
     if (circleId == "") {
-      RegExp regExp = RegExp(r"openSlidePanel('/circle/(.*)/')");
+      RegExp regExp = RegExp(r"openSlidePanel('/circle/(.*)')");
       var match = regExp.firstMatch(circle.outerHtml);
       if (match != null) {
         circleId = match.group(1)!;
@@ -153,7 +153,12 @@ class Manager {
         .querySelector('.circle-content > div:not(.reply-to)')
         ?.text
         .trim();
+    textContent ??= circle
+      .querySelector('.replyed-circle-contents')
+      ?.text
+      .trim();
     textContent ??= '';
+
 
     String? imageUrlRaw = circle.querySelector('.attached-image')?.attributes['src'];
     String imageUrl = imageUrlRaw != null ? 'https://fiicen.jp$imageUrlRaw' : '';

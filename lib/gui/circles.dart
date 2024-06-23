@@ -262,13 +262,13 @@ class _CircleMenuState extends State<CircleMenu> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            circle.reflew_name != null
+                            circle.replyed_to != null
                                 ? Row(children: [
                                     const Text('返信先: '),
                                     GestureDetector(
                                       onTap: () async {
                                         User user = await Manager.getUserDetails(
-                                            '${circle.reflew_name}');
+                                            '${circle.replyed_to}');
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(

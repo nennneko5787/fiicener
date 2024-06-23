@@ -166,58 +166,57 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Display reply source circle if available
-                    FutureBuilder<Circle?>(
-                      future: replySourceFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (snapshot.data == null) {
-                          return const SizedBox();
-                        } else {
-                          final replySourceCircle = snapshot.data!;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '返信元サークル:',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              ListTile(
-                                contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
-                                minVerticalPadding: 8.0 * 0.2,
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        _buildCircleAvatar(context, replySourceCircle),
-                                        const SizedBox(width: 8),
-                                        _buildUserInfo(replySourceCircle),
-                                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: FutureBuilder<Circle?>(
+                        future: replySourceFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (snapshot.data == null) {
+                            return const SizedBox();
+                          } else {
+                            final replySourceCircle = snapshot.data!;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  minVerticalPadding: 8.0 * 0.2,
+                                  title: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          _buildCircleAvatar(context, replySourceCircle),
+                                          const SizedBox(width: 8),
+                                          _buildUserInfo(replySourceCircle),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text.rich(TextAgent.generate(replySourceCircle.content, context)),
+                                      _buildActions(replySourceCircle),
+                                      const Divider(
+                                        color: Colors.black,
+                                        thickness: 1,
+                                        height: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CircleDetailPage(circle: replySourceCircle),
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text.rich(TextAgent.generate(replySourceCircle.content, context)),
-                                    _buildActions(replySourceCircle),
-                                    const Divider(
-                                      color: Colors.black,
-                                      thickness: 1,
-                                      height: 2,
-                                    ),
-                                  ],
-                                ),
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CircleDetailPage(circle: replySourceCircle),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        }
-                      },
+                              ],
+                            );
+                          }
+                        },
+                      ),
                     ),
                     // Main circle details
                     Row(
@@ -298,57 +297,60 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                       height: 2,
                     ),
                     // List of replies
-                    FutureBuilder<List<Circle>>(
-                      future: widget.circle.getReplys(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return const SizedBox();
-                        } else {
-                          final circles = snapshot.data!;
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: circles.length,
-                            itemBuilder: (context, index) {
-                              final c = circles[index];
-                              return ListTile(
-                                contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
-                                minVerticalPadding: 8.0 * 0.2,
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        _buildCircleAvatar(context, c),
-                                        const SizedBox(width: 8),
-                                        _buildUserInfo(c),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text.rich(TextAgent.generate(c.content, context)),
-                                    _buildActions(c),
-                                    const Divider(
-                                      color: Colors.black,
-                                      thickness: 1,
-                                      height: 2,
-                                    ),
-                                  ],
-                                ),
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CircleDetailPage(circle: c),
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: FutureBuilder<List<Circle>>(
+                        future: widget.circle.getReplys(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return const SizedBox();
+                          } else {
+                            final circles = snapshot.data!;
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: circles.length,
+                              itemBuilder: (context, index) {
+                                final c = circles[index];
+                                return ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  minVerticalPadding: 8.0 * 0.2,
+                                  title: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          _buildCircleAvatar(context, c),
+                                          const SizedBox(width: 8),
+                                          _buildUserInfo(c),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text.rich(TextAgent.generate(c.content, context)),
+                                      _buildActions(c),
+                                      const Divider(
+                                        color: Colors.black,
+                                        thickness: 1,
+                                        height: 2,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              );
-                            },
-                          );
-                        }
-                      },
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CircleDetailPage(circle: c),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
