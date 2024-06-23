@@ -111,10 +111,10 @@ class User {
   }
 
   Future<List<Circle>> getPostedCircles({int page = 1}) async {
-    final _user = userHandle.replaceFirst('@', '');
+    final user = userHandle.replaceFirst('@', '');
 
     final response = await HttpWrapper.get(
-      Uri.parse('https://fiicen.jp/circle/block/field/$_user/$page/'),
+      Uri.parse('https://fiicen.jp/circle/block/field/$user/$page/'),
     );
 
     List<Circle> circleslist = [];

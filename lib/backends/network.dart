@@ -17,7 +17,7 @@ class HttpWrapper {
     };
     allheaders.addAll(headers ?? {});
 
-    allheaders['Cookie'] = (allheaders['Cookie'] ?? '') + (allheaders['Cookie'] != null ? '; ' : '') + 'sessionid=$session; csrftoken=$csrf';
+    allheaders['Cookie'] = '${allheaders['Cookie'] ?? ''}${allheaders['Cookie'] != null ? '; ' : ''}sessionid=$session; csrftoken=$csrf';
 
     final response = await http.get(
       url,
@@ -41,7 +41,7 @@ class HttpWrapper {
     };
     allheaders.addAll(headers ?? {});
 
-    allheaders['Cookie'] = (allheaders['Cookie'] ?? '') + (allheaders['Cookie'] != null ? '; ' : '') + 'sessionid=$session; csrftoken=$csrf';
+    allheaders['Cookie'] = '${allheaders['Cookie'] ?? ''}${allheaders['Cookie'] != null ? '; ' : ''}sessionid=$session; csrftoken=$csrf';
 
     if (!allheaders.containsKey('X-CSRFToken')) {
       allheaders['X-CSRFToken'] = '$csrf';

@@ -139,7 +139,7 @@ class _CircleMenuState extends State<CircleMenu> {
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.repeat),
-                color: circle.reflown ? Colors.green : Colors.white54,
+                color: circle.reflown ? Colors.green : null,
                 onPressed: () async {
                   bool reflown = await circle.refly();
                   if (reflown) {
@@ -150,7 +150,7 @@ class _CircleMenuState extends State<CircleMenu> {
               Text(snapshot.data![1].toString()),
               const SizedBox(width: 16),
               IconButton(
-                color: circle.liked ? Colors.pink : Colors.white54,
+                color: circle.liked ? Colors.pink : null,
                 icon: circle.liked ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
                 onPressed: () async {
                   bool liked = await circle.like();
@@ -281,7 +281,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                               const TextStyle(color: Colors.lightBlue)),
                                     ),
                                   ])
-                                : SizedBox(),
+                                : const SizedBox(),
                             Text.rich(TextAgent.generate(circle.content, context)),
                             circle.imageUrl != null
                                 ? GestureDetector(

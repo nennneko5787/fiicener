@@ -445,7 +445,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     const TextStyle(color: Colors.lightBlue)),
                                           ),
                                         ])
-                                      : SizedBox(),
+                                      : const SizedBox(),
                                   Text.rich(TextAgent.generate(circle.content, context)),
                                   circle.imageUrl != null
                                       ? GestureDetector(
