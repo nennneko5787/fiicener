@@ -166,20 +166,20 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Display reply source circle if available
-                    Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: FutureBuilder<Circle?>(
-                        future: replySourceFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else if (snapshot.data == null) {
-                            return const SizedBox();
-                          } else {
-                            final replySourceCircle = snapshot.data!;
-                            return Column(
+                    FutureBuilder<Circle?>(
+                      future: replySourceFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.data == null) {
+                          return const SizedBox();
+                        } else {
+                          final replySourceCircle = snapshot.data!;
+                          return Padding(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ListTile(
@@ -213,10 +213,10 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                                   ),
                                 ),
                               ],
-                            );
-                          }
-                        },
-                      ),
+                            )
+                          );
+                        }
+                      },
                     ),
                     // Main circle details
                     Row(
