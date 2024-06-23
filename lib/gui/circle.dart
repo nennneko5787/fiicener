@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../backends/circle.dart'; // Circle クラスを提供するファイルをインポート
+import '../backends/circle.dart'; // Import file providing Circle class
 import '../backends/textagent.dart';
 import '../backends/circle_gui_helper.dart';
 import 'profile.dart';
@@ -8,7 +8,7 @@ import 'footer.dart';
 class CircleDetailPage extends StatefulWidget {
   final Circle circle;
 
-  const CircleDetailPage({super.key, required this.circle});
+  const CircleDetailPage({Key? key, required this.circle}) : super(key: key);
 
   @override
   _CircleDetailPageState createState() => _CircleDetailPageState();
@@ -16,11 +16,30 @@ class CircleDetailPage extends StatefulWidget {
 
 class _CircleDetailPageState extends State<CircleDetailPage> {
   final TextEditingController replyTextFieldController = TextEditingController();
-  final _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
+  late Future<Circle?> replySourceFuture;
 
   @override
-  void dispose(){
+  void initState() {
+    super.initState();
+    getReplySource();
+  }
+
+  Future<void> getReplySource() async {
+    try {
+      replySourceFuture = widget.circle.getReplySource();
+      await replySourceFuture;
+      setState(() {}); // Update UI when replySourceFuture completes
+    } catch (e) {
+      // Handle error
+      print('Error fetching reply source: $e');
+    }
+  }
+
+  @override
+  void dispose() {
     replyTextFieldController.dispose();
+    _scrollController.dispose(); // Dispose the scroll controller
     super.dispose();
   }
 
@@ -99,7 +118,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.repeat),
-                color: circle.reflown ? Colors.green : Colors.black,
+                color: circle.reflown ? Colors.green : null,
                 onPressed: () async {
                   bool reflown = await circle.refly();
                   if (reflown) {
@@ -110,7 +129,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
               Text(snapshot.data![1].toString()),
               const SizedBox(width: 16),
               IconButton(
-                color: circle.liked ? Colors.pink : Colors.black,
+                color: circle.liked ? Colors.pink : null,
                 icon: circle.liked ? const Icon(Icons.favorite) : const Icon(Icons.favorite_outline),
                 onPressed: () async {
                   bool liked = await circle.like();
@@ -146,6 +165,61 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Display reply source circle if available
+                    FutureBuilder<Circle?>(
+                      future: replySourceFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.data == null) {
+                          return const SizedBox();
+                        } else {
+                          final replySourceCircle = snapshot.data!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '返信元サークル:',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              ListTile(
+                                contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
+                                minVerticalPadding: 8.0 * 0.2,
+                                title: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        _buildCircleAvatar(context, replySourceCircle),
+                                        const SizedBox(width: 8),
+                                        _buildUserInfo(replySourceCircle),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text.rich(TextAgent.generate(replySourceCircle.content, context)),
+                                    _buildActions(replySourceCircle),
+                                    const Divider(
+                                      color: Colors.black,
+                                      thickness: 1,
+                                      height: 2,
+                                    ),
+                                  ],
+                                ),
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CircleDetailPage(circle: replySourceCircle),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                    ),
+                    // Main circle details
                     Row(
                       children: [
                         _buildCircleAvatar(context, widget.circle),
@@ -174,6 +248,8 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                         : const SizedBox(),
                     _buildActions(widget.circle),
                     Text("サークルID: ${widget.circle.id}"),
+                    Text("リフライ先: ${widget.circle.reflew_name}"),
+                    Text("リプライ先: ${widget.circle.replyed_to}"),
                     const Divider(
                       color: Colors.black,
                       thickness: 1,
@@ -188,28 +264,28 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        if (replyTextFieldController.text != ""){
-                          String _text = replyTextFieldController.text;
+                        if (replyTextFieldController.text.isNotEmpty) {
+                          String text = replyTextFieldController.text;
                           replyTextFieldController.text = "";
-                          bool isPosted = await widget.circle.reply(_text);
-                          if (isPosted){
+                          bool isPosted = await widget.circle.reply(text);
+                          if (isPosted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('返信がポストされました。')),
                             );
                             setState(() {});
-                          }else{
+                          } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('返信できませんでした。')),
                             );
                           }
-                        }else{
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('本文は空欄であってはいけません。')),
                           );
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue
+                        backgroundColor: Colors.blue,
                       ),
                       child: const Text(
                         'ポスト',
@@ -221,6 +297,7 @@ class _CircleDetailPageState extends State<CircleDetailPage> {
                       thickness: 1,
                       height: 2,
                     ),
+                    // List of replies
                     FutureBuilder<List<Circle>>(
                       future: widget.circle.getReplys(),
                       builder: (context, snapshot) {

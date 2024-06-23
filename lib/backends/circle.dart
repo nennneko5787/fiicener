@@ -58,9 +58,6 @@ class Circle {
   }
 
   Future<int> getReplysCount() async {
-    String? session = await Manager.loadSessionToken();
-    String? csrf = await Manager.loadCsrfToken();
-
     final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/$id/')
     );
@@ -154,6 +151,26 @@ class Circle {
     return matches.length;
   }
 
+  Future<Circle?> getReplySource() async {
+    final response = await HttpWrapper.get(
+      Uri.parse('https://fiicen.jp/circle/$id/'),
+    );
+
+    // HTMLをパースする
+    var document = htmlParser.parse(response.body).querySelector(".circle-panel-replyed");
+
+    if (document != null){
+      Circle? parsedCircle = await Manager.parseCircle(document);
+      if (parsedCircle != null) {
+        return parsedCircle;
+      }else{
+        return null;
+      }
+    }else{
+      return null;
+    }
+  }
+
   Future<bool> refly() async {
     final response = await HttpWrapper.post(
       Uri.parse('https://fiicen.jp/circle/refly/'),
@@ -211,7 +228,7 @@ class Circle {
 
   Future<bool> report(ReportTypes type) async {
     final response = await HttpWrapper.post(
-      Uri.parse('https://fiicen.jp/report/circle/${id}/'),
+      Uri.parse('https://fiicen.jp/report/circle/$id/'),
       body: {"type": type.name},
       headers: {
         'Content-Type': 'multipart/form-data',

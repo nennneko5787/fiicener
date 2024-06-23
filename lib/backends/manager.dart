@@ -41,9 +41,6 @@ class Manager {
   }
 
   static Future<String?> getUserId() async {
-    String? session = await loadSessionToken();
-    String? csrf = await loadCsrfToken();
-
     final homeres = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/home/'),
     );
@@ -138,7 +135,7 @@ class Manager {
     }
     if (circleId == "") {
       RegExp regExp = RegExp(r"openSlidePanel('/circle/(.*)/')");
-      var match = regExp.firstMatch(circle.innerHtml);
+      var match = regExp.firstMatch(circle.outerHtml);
       if (match != null) {
         circleId = match.group(1)!;
       }
@@ -150,15 +147,13 @@ class Manager {
     }else{
       return null;
     }
-    User user = await getUserDetails("${accountName}");
+    User user = await getUserDetails(accountName);
 
     String? textContent = circle
         .querySelector('.circle-content > div:not(.reply-to)')
         ?.text
         .trim();
-    if (textContent == null) {
-      textContent = '';
-    }
+    textContent ??= '';
 
     String? imageUrlRaw = circle.querySelector('.attached-image')?.attributes['src'];
     String imageUrl = imageUrlRaw != null ? 'https://fiicen.jp$imageUrlRaw' : '';
@@ -170,7 +165,7 @@ class Manager {
     String? videoUrl = videoPoster != null ? 'https://fiicen.jp/media/attached_video/$circleId.mp4' : '';
 
     String? replyedTo;
-    String? replyHTML = circle.querySelector('.reply-to')?.innerHtml;
+    String? replyHTML = circle.querySelector('.circle-content')?.querySelector('.reply-to')?.innerHtml;
     if (replyHTML != null) {
       RegExp regExp = RegExp(r'\/field\/(.*?)\/');
       var match = regExp.firstMatch(replyHTML);
@@ -203,9 +198,6 @@ class Manager {
   }
 
   static Future<List<Circle>> getHomeCircles({int page = 1}) async {
-    String? session = await loadSessionToken();
-    String? csrf = await loadCsrfToken();
-
     final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/circle/block/home/$page/'),
     );
@@ -228,9 +220,6 @@ class Manager {
 
 
   static Future<int> getNotificationCount() async {
-    String? session = await loadSessionToken();
-    String? csrf = await loadCsrfToken();
-
     final res = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/notification/count/'),
     );
@@ -240,9 +229,6 @@ class Manager {
   }
 
   static Future<List<Notification>> getNotifinations() async {
-    String? session = await loadSessionToken();
-    String? csrf = await loadCsrfToken();
-
     final response = await HttpWrapper.get(
       Uri.parse('https://fiicen.jp/notification/'),
     );
@@ -282,7 +268,7 @@ class Manager {
       }
 
       NotificationTypes type = NotificationTypes.none;
-      Circle? targetCircle = null;
+      Circle? targetCircle;
 
       dom.Element? itemImage = document.querySelector('.notification-item-image');
       String? notificationTypeIconHtml = itemImage?.innerHtml;
@@ -318,7 +304,7 @@ class Manager {
 
       notifyList.add(Notification(
           type: NotificationTypes.like,
-          actionUser: await Manager.getUserDetails("$userId"),
+          actionUser: await Manager.getUserDetails(userId),
           targetCircle: targetCircle,
           time: "0分",
           isRead: isRead,

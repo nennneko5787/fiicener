@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../gui/profile.dart';
 import 'manager.dart';
@@ -17,21 +16,21 @@ class TextAgent {
       );
 
   static TextSpan generateLinkTextSpan(String url) {
-    final _encodedUrl = Uri.encodeFull(url);
-    final _recognizer = TapGestureRecognizer()
+    final encodedUrl = Uri.encodeFull(url);
+    final recognizer = TapGestureRecognizer()
       ..onTap = () async {
-        await launchUrlString(_encodedUrl, mode: LaunchMode.externalApplication);
+        await launchUrlString(encodedUrl, mode: LaunchMode.externalApplication);
       };
-    final _textSpan = TextSpan(
+    final textSpan = TextSpan(
       text: url,
-      recognizer: _recognizer,
-      style: TextStyle(color: Colors.lightBlue),
+      recognizer: recognizer,
+      style: const TextStyle(color: Colors.lightBlue),
     );
-    return _textSpan;
+    return textSpan;
   }
 
   static TextSpan generateMentionTextSpan(String mention, BuildContext context) {
-    final _recognizer = TapGestureRecognizer()
+    final recognizer = TapGestureRecognizer()
       ..onTap = () {
         final username = mention.substring(1);
         Manager.getUserDetails(username).then((user) {
@@ -44,38 +43,38 @@ class TextAgent {
         });
       };
 
-    final _textSpan = TextSpan(
+    final textSpan = TextSpan(
       text: mention,
-      recognizer: _recognizer,
-      style: TextStyle(color: Colors.green),
+      recognizer: recognizer,
+      style: const TextStyle(color: Colors.green),
     );
-    return _textSpan;
+    return textSpan;
   }
 
-  static TextSpan generate(String _rawText, BuildContext context) {
-    final List<TextSpan> _textSpans = [];
-    final _splitRegExp = RegExp('(${_urlRegExp.pattern})|(${_mentionRegExp.pattern})');
+  static TextSpan generate(String rawText, BuildContext context) {
+    final List<TextSpan> textSpans = [];
+    final splitRegExp = RegExp('(${_urlRegExp.pattern})|(${_mentionRegExp.pattern})');
 
-    _rawText.splitMapJoin(
-      _splitRegExp,
+    rawText.splitMapJoin(
+      splitRegExp,
       onMatch: (Match match) {
         final matchedText = match.group(0) ?? '';
         if (_urlRegExp.hasMatch(matchedText)) {
-          final _urlSpan = generateLinkTextSpan(matchedText);
-          _textSpans.add(_urlSpan);
+          final urlSpan = generateLinkTextSpan(matchedText);
+          textSpans.add(urlSpan);
         } else if (_mentionRegExp.hasMatch(matchedText)) {
-          final _mentionSpan = generateMentionTextSpan(matchedText, context);
-          _textSpans.add(_mentionSpan);
+          final mentionSpan = generateMentionTextSpan(matchedText, context);
+          textSpans.add(mentionSpan);
         }
         return '';
       },
       onNonMatch: (String text) {
-        final _commonSpan = TextSpan(text: text);
-        _textSpans.add(_commonSpan);
+        final commonSpan = TextSpan(text: text);
+        textSpans.add(commonSpan);
         return '';
       },
     );
 
-    return TextSpan(children: _textSpans);
+    return TextSpan(children: textSpans);
   }
 }

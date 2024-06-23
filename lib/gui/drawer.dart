@@ -89,7 +89,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: const Text('Fiicenerについて'),
-                    content: Text.rich(TextAgent.generate("プログラム書いてる人: @nennneko5787\nFiicen by: @Fiicener\n\nGithub repository: https://github.com/nennneko5787/fiicener", context)),
+                    content: Text.rich(TextAgent.generate("Project Leader: @nennneko5787\nContributors: @RasPython3\nFiicen by: @Fiicener\nThanks for all contributors and Fiicen developer team.\nGithub repository: https://github.com/nennneko5787/fiicener", context)),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () {
