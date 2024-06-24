@@ -39,9 +39,9 @@ jobs:
           sudo cp -rf /usr/lib/android-sdk ~/
           sudo chown -R $(id -u):$(id -g) ~/android-sdk 
           wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-          unzip commandlinetools-*.zip
+          unzip commandlinetools-linux-11076708_latest.zip
           mkdir -p ~/android-sdk/cmdline-tools/latest
-          mv ~/cmdline-tools/* ~/android-sdk/cmdline-tools/latest/
+          mv ~/commandlinetools-linux-11076708_latest/cmdline-tools/* ~/android-sdk/cmdline-tools/latest/
           # JDK
           JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")
           export JAVA_HOME
