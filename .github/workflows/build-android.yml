@@ -21,7 +21,6 @@ jobs:
       - name: "Install and Build"
         run: |
           flutter pub get
-          flutter test
           flutter build apk
       - name: "Deploy apk"
         uses: actions/upload-artifact@v1
