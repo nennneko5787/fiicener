@@ -38,8 +38,8 @@ jobs:
           sudo apt install android-sdk openjdk-17-jdk
           sudo cp -rf /usr/lib/android-sdk ~/
           sudo chown -R $(id -u):$(id -g) ~/android-sdk 
-          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip?hl=ja
-          unzip commandlinetools-linux-*_latest.zip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip?hl=ja -o cmdlinetools.zip
+          unzip cmdlinetools.zip
           mkdir -p ~/android-sdk/cmdline-tools/latest
           mv ~/cmdline-tools/* ~/android-sdk/cmdline-tools/latest/
           # JDK
