@@ -276,7 +276,7 @@ class _CircleMenuState extends State<CircleMenu> {
                                                   ProfilePage(user: user)),
                                         );
                                       },
-                                      child: Text('@${circle.reflew_name}',
+                                      child: Text('@${circle.replyed_to}',
                                           style:
                                               const TextStyle(color: Colors.lightBlue)),
                                     ),

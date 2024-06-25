@@ -411,7 +411,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               ),
                                             ),
                                             const Divider(
-                                              color: Colors.grey,
+                                              color: Colors.black,
                                               thickness: 1,
                                               height: 2,
                                             ),
@@ -426,13 +426,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ],
                                   ),
                                   const SizedBox(height: 8),
-                                  circle.reflew_name != null
+                                  circle.replyed_to != null
                                       ? Row(children: [
                                           const Text('返信先: '),
                                           GestureDetector(
                                             onTap: () async {
                                               User user = await Manager.getUserDetails(
-                                                  '${circle.reflew_name}');
+                                                  '${circle.replyed_to}');
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -440,7 +440,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         ProfilePage(user: user)),
                                               );
                                             },
-                                            child: Text('@${circle.reflew_name}',
+                                            child: Text('@${circle.replyed_to}',
                                                 style:
                                                     const TextStyle(color: Colors.lightBlue)),
                                           ),
@@ -466,7 +466,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       : const SizedBox(),
                                   _buildActions(circle),
                                   const Divider(
-                                    color: Colors.grey,
+                                    color: Colors.black,
                                     thickness: 1,
                                     height: 2,
                                   ),
